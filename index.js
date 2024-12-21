@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 const db = require('./config/db');
 const productosRoutes = require('./routes/productosRoutes')
 const estadoRoutes = require('./routes/estadoRoutes')
+const clienteRoutes = require('./routes/clienteRoutes')
 var app = express();
 var port = 3000;
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 //Rutas
 app.use("/api/productos", productosRoutes);
 app.use("/api/estado", estadoRoutes);
+app.use("/api/clientes", clienteRoutes)
 
 //Home
 app.get('/', async function(req, res){
