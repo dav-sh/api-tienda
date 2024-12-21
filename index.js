@@ -4,6 +4,7 @@ const db = require('./config/db');
 const productosRoutes = require('./routes/productosRoutes')
 const estadoRoutes = require('./routes/estadoRoutes')
 const clienteRoutes = require('./routes/clienteRoutes')
+const categoriaProdRoutes = require('./routes/categoriaProdRoutes')
 var app = express();
 var port = 3000;
 
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use("/api/productos", productosRoutes);
 app.use("/api/estado", estadoRoutes);
 app.use("/api/clientes", clienteRoutes)
+app.use("/api/categoria", categoriaProdRoutes)
 
 //Home
 app.get('/', async function(req, res){
