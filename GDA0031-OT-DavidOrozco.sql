@@ -297,6 +297,7 @@ GO
 -- Insertar una orden con detalles usando JSON
 CREATE PROCEDURE p_Insertar_Orden
     @usuarios_idusuarios INT,
+	@estados_idestados INT,
     @direccion NVARCHAR(45),
     @telefono NVARCHAR(45),
     @correo_electronico NVARCHAR(45),
@@ -311,8 +312,8 @@ BEGIN
         -- 1. Insertar la Orden Principal
         DECLARE @idOrden INT;
 
-        INSERT INTO Orden (usuarios_idusuarios, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
-        VALUES (@usuarios_idusuarios, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
+        INSERT INTO Orden (usuarios_idusuarios, estados_idestados, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
+        VALUES (@usuarios_idusuarios, @estados_idestados, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
 
         SET @idOrden = SCOPE_IDENTITY(); -- Recuperar el ID de la orden insertada
 
@@ -602,6 +603,35 @@ END;
 GO
 
 
+-- Actualizar un producto existente
+CREATE PROCEDURE p_Actualizar_Producto
+    @idProducto INT, -- ID del producto a actualizar
+    @CategoriaProductos_idCategoriaProductos INT,
+    @usuarios_idusuarios INT,
+    @nombre NVARCHAR(45),
+    @marca NVARCHAR(45),
+    @codigo NVARCHAR(45),
+    @stock FLOAT,
+    @precio FLOAT,
+    @foto VARBINARY(MAX)
+AS
+BEGIN
+    UPDATE Productos
+    SET 
+        CategoriaProductos_idCategoriaProductos = @CategoriaProductos_idCategoriaProductos,
+        usuarios_idusuarios = @usuarios_idusuarios,
+        nombre = @nombre,
+        marca = @marca,
+        codigo = @codigo,
+        stock = @stock,
+        precio = @precio,
+        foto = @foto
+    WHERE idProductos = @idProducto;
+END;
+GO
+
+
+
 -- Actualizar stock de un producto
 CREATE PROCEDURE p_Actualizar_Stock_Producto
     @idProducto INT,
@@ -628,6 +658,15 @@ BEGIN
     WHERE idProductos = @idProducto;
 END;
 
+
+
+
+GO
+CREATE PROCEDURE p_getProductos
+AS
+BEGIN
+    SELECT * FROM Productos;
+END;
 
 
 
@@ -811,12 +850,12 @@ EXEC p_Actualizar_Stock_Producto
 ----------------- INSERTAR UNA ORDEN ----------------
 
 DECLARE @jsonDetalles NVARCHAR(MAX) = '[
-    {"Productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00},
-    {"Productos_idProductos": 2, "cantidad": 1, "precio": 200.00, "subtotal": 200.00}
+    {"Productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00}
 ]';
 
 EXEC p_Insertar_Orden
     @usuarios_idusuarios = 1,
+	@estados_idestados = 1,
     @direccion = '123 Calle Principal',
     @telefono = '555-123-4567',
     @correo_electronico = 'cliente@email.com',
@@ -825,11 +864,12 @@ EXEC p_Insertar_Orden
     @jsonDetalles = @jsonDetalles;
 
 
+	GO
+
 
 ------ MODIFICAR UNA ORDEN --------------
 DECLARE @jsonDetalles NVARCHAR(MAX) = '[
-    {"Productos_idProductos": 1, "cantidad": 3, "precio": 150.00, "subtotal": 450.00},
-    {"Productos_idProductos": 2, "cantidad": 2, "precio": 200.00, "subtotal": 400.00}
+    {"Productos_idProductos": 1, "cantidad": 3, "precio": 150.00, "subtotal": 450.00}
 ]';
 
 EXEC p_Modificar_Orden

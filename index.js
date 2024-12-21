@@ -1,26 +1,37 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 const db = require('./config/db');
-
+const productosRoutes = require('./routes/productosRoutes')
 var app = express();
-var port = process.env.PORT || 3525;
+var port = 3000;
 
 
 
-// Convierte una petición recibida (POST-GET...) a objeto JSON
+// Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
+
+
+//Rutas
+app.use("/api/productos", productosRoutes);
+
+
 app.get('/', async function(req, res){
 
-	const data = await db.sequelize.authenticate();
-   	// res.status(200).send({
-	// 	message: 'GET Home route working fine!'
-	// });
+	try {
+		await db.authenticate()
+		console.log('La conexión se ha establecido correctamente.');
+	} catch (error) {
+		console.error('No se pudo conectar a la base de datos:', error);
+	}
+   	res.status(200).send({
+		message: 'GET Home route working fine!'
+	});
 });
 
 app.listen(port, function(){
 	console.log(`Server running in http://localhost:${port}`);
-	console.log('Defined routes:');
-	console.log('	[GET] http://localhost:3525/');
+	
+	
 });
