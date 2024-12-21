@@ -268,6 +268,32 @@ END;
 GO
 
 
+-- Modificar información de un usuario
+CREATE PROCEDURE p_Modificar_Usuario
+    @idusuarios INT,
+    @rol_idrol INT = NULL,
+    @estados_idestados INT = NULL,
+    @correo_electronico NVARCHAR(245) = NULL,
+    @nombre_completo NVARCHAR(245) = NULL,
+    @password NVARCHAR(45) = NULL,
+    @telefono NVARCHAR(45) = NULL,
+    @fecha_nacimiento DATE = NULL,
+    @clientes_idclientes INT = NULL
+AS
+BEGIN
+    UPDATE Usuarios
+    SET
+        rol_idrol = ISNULL(@rol_idrol, rol_idrol),
+        estados_idestados = ISNULL(@estados_idestados, estados_idestados),
+        correo_electronico = ISNULL(@correo_electronico, correo_electronico),
+        nombre_completo = ISNULL(@nombre_completo, nombre_completo),
+        password = ISNULL(@password, password),
+        telefono = ISNULL(@telefono, telefono),
+        fecha_nacimiento = ISNULL(@fecha_nacimiento, fecha_nacimiento),
+        clientes_idclientes = ISNULL(@clientes_idclientes, clientes_idclientes)
+    WHERE idusuarios = @idusuarios;
+END;
+GO
 
 
 
