@@ -1,4 +1,4 @@
-express sequelize tedious jsonwebtoken bcrypt dotenv cors nodemon oracledb
+express sequelize tedious jsonwebtoken bcrypt dotenv cors nodemon 
 
 abrir puertos
 crear la bdd
