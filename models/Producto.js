@@ -11,4 +11,25 @@ const Producto = sequelize.define("Producto", {
   foto: { type: DataTypes.BLOB("long") },
 });
 
+
+// Relaciones de Producto
+Producto.associate = (models) => {
+  Producto.belongsTo(models.CategoriaProductos, {
+    foreignKey: "CategoriaProductos_idCategoriaProductos",
+    as: "categoria",
+  });
+
+Producto.belongsTo(models.Estados, {
+  foreignKey: "estados_idestados",
+  as: "estado",
+  });
+
+Producto.hasMany(models.OrdenDetalles, {
+  foreignKey: "Productos_idProductos",
+  as: "ordenDetalles",
+  });
+
+};
+
+
 module.exports = Producto;

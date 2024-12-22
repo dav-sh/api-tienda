@@ -39,4 +39,24 @@ const CategoriaProductos = sequelize.define('CategoriaProductos', {
   timestamps: false,
 });
 
+
+
+// Relaciones de CategoriaProductos
+CategoriaProductos.associate = (models) => {
+  CategoriaProductos.belongsTo(models.Usuarios, {
+    foreignKey: "usuarios_idusuarios",
+    as: "usuario",
+  });
+
+  CategoriaProductos.belongsTo(models.Estados, {
+    foreignKey: "estados_idestados",
+    as: "estado",
+  });
+
+  CategoriaProductos.hasMany(models.Producto, {
+    foreignKey: "CategoriaProductos_idCategoriaProductos",
+    as: "productos",
+  });
+};
+
 module.exports = CategoriaProductos;

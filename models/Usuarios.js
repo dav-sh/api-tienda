@@ -69,4 +69,26 @@ Usuarios.beforeCreate(async (user) => {
   user.password = await bcrypt.hash(user.password, rondas);
 });
 
+
+// Relacion Usuarios con Roles
+Usuarios.associate = (models) => {
+  Usuarios.belongsTo(models.Roles, {
+    foreignKey: 'rol_idrol',
+    as: 'rol',
+  });
+
+  // Relacion Usuarios con Estados
+  Usuarios.belongsTo(models.Estados, {
+    foreignKey: 'estados_idestados',
+    as: 'estado',
+  });
+
+  // Relacion Usuarios con Clientes
+  Usuarios.belongsTo(models.Clientes, {
+    foreignKey: 'clientes_idclientes',
+    as: 'cliente',
+  });
+};
+
+
 module.exports = Usuarios;

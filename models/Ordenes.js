@@ -90,7 +90,39 @@ const OrdenDetalles = sequelize.define('OrdenDetalles', {
     }
 });
 
-Ordenes.hasMany(OrdenDetalles, { foreignKey: 'Orden_idOrden' });
-OrdenDetalles.belongsTo(Ordenes, { foreignKey: 'Orden_idOrden' });
+
+
+// Relaciones de Ordenes
+Ordenes.associate = (models) => {
+    Ordenes.belongsTo(models.Usuarios, {
+      foreignKey: "usuarios_idusuarios",
+      as: "usuario",
+    });
+  
+    Ordenes.belongsTo(models.Estados, {
+      foreignKey: "estados_idestados",
+      as: "estado",
+    });
+  
+    Ordenes.hasMany(models.OrdenDetalles, {
+      foreignKey: "Orden_idOrden",
+      as: "ordenDetalles",
+    });
+  };
+  
+
+
+// Relaciones de OrdenDetalles
+OrdenDetalles.associate = (models) => {
+    OrdenDetalles.belongsTo(models.Ordenes, {
+      foreignKey: "Orden_idOrden",
+      as: "orden",
+    });
+  
+    OrdenDetalles.belongsTo(models.Producto, {
+      foreignKey: "Productos_idProductos",
+      as: "producto",
+    });
+  };
 
 module.exports = { Ordenes, OrdenDetalles };
