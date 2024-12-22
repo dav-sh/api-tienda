@@ -65,7 +65,7 @@ CREATE TABLE Productos (
     foto VARBINARY(MAX)
 );
 
-CREATE TABLE Orden (
+CREATE TABLE Ordenes (
     idOrden INT IDENTITY(1,1) PRIMARY KEY,
     usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES usuarios(idusuarios),
     estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
@@ -80,7 +80,7 @@ CREATE TABLE Orden (
 
 CREATE TABLE OrdenDetalles (
     idOrdenDetalles INT IDENTITY(1,1) PRIMARY KEY,
-    Orden_idOrden INT NOT NULL FOREIGN KEY REFERENCES Orden(idOrden),
+    Orden_idOrden INT NOT NULL FOREIGN KEY REFERENCES Ordenes(idOrden),
     Productos_idProductos INT NOT NULL FOREIGN KEY REFERENCES Productos(idProductos),
     cantidad INT,
     precio FLOAT,
@@ -317,13 +317,14 @@ GO
 
 
 
-------------------ORDEN----------------------------
-
+--------------------ORDEN----------------------------
+-- Creo que hay un problema con el nombre de la tabla jaaj F
 
 -- Insertar una orden con detalles usando JSON
 CREATE PROCEDURE p_Insertar_Orden
     @usuarios_idusuarios INT,
 	@estados_idestados INT,
+	@nombre_completo NVARCHAR(245),
     @direccion NVARCHAR(45),
     @telefono NVARCHAR(45),
     @correo_electronico NVARCHAR(45),
@@ -338,8 +339,8 @@ BEGIN
         -- 1. Insertar la Orden Principal
         DECLARE @idOrden INT;
 
-        INSERT INTO Orden (usuarios_idusuarios, estados_idestados, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
-        VALUES (@usuarios_idusuarios, @estados_idestados, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
+        INSERT INTO Ordenes (usuarios_idusuarios, estados_idestados, nombre_completo, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
+        VALUES (@usuarios_idusuarios, @estados_idestados, @nombre_completo, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
 
         SET @idOrden = SCOPE_IDENTITY(); -- Recuperar el ID de la orden insertada
 
@@ -369,9 +370,11 @@ END;
 GO
 
 
--- Procedimiento almacenado para actualizar una orden y sus detalles
+-- Procedimiento almacenado para actualizar una orden y sus detalles-- Procedimiento almacenado para actualizar una orden y sus detalles
 CREATE PROCEDURE p_Modificar_Orden
     @idOrden INT,
+    @estados_idestados INT,
+    @nombre_completo NVARCHAR(245),
     @direccion NVARCHAR(45),
     @telefono NVARCHAR(45),
     @correo_electronico NVARCHAR(45),
@@ -384,8 +387,10 @@ BEGIN
         BEGIN TRANSACTION;
 
         -- 1. Actualizar la Orden Principal
-        UPDATE Orden
-        SET direccion = @direccion,
+        UPDATE Ordenes
+        SET estados_idestados = @estados_idestados,
+            nombre_completo = @nombre_completo,
+            direccion = @direccion,
             telefono = @telefono,
             correo_electronico = @correo_electronico,
             fecha_entrega = @fecha_entrega,
@@ -397,20 +402,23 @@ BEGIN
         WHERE Orden_idOrden = @idOrden;
 
         -- 3. Insertar los nuevos detalles de la orden usando OPENJSON
-        INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
-        SELECT 
-            @idOrden AS Orden_idOrden,
-            JSONDetalles.Productos_idProductos,
-            JSONDetalles.cantidad,
-            JSONDetalles.precio,
-            JSONDetalles.subtotal
-        FROM OPENJSON(@jsonDetalles)
-        WITH (
-            Productos_idProductos INT '$.Productos_idProductos',
-            cantidad INT '$.cantidad',
-            precio FLOAT '$.precio',
-            subtotal FLOAT '$.subtotal'
-        ) AS JSONDetalles;
+        IF @jsonDetalles IS NOT NULL AND @jsonDetalles <> ''
+        BEGIN
+            INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
+            SELECT 
+                @idOrden AS Orden_idOrden,
+                JSONDetalles.Productos_idProductos,
+                JSONDetalles.cantidad,
+                JSONDetalles.precio,
+                JSONDetalles.subtotal
+            FROM OPENJSON(@jsonDetalles)
+            WITH (
+                Productos_idProductos INT '$.Productos_idProductos',
+                cantidad INT '$.cantidad',
+                precio FLOAT '$.precio',
+                subtotal FLOAT '$.subtotal'
+            ) AS JSONDetalles;
+        END
 
         COMMIT TRANSACTION;
     END TRY
@@ -422,8 +430,6 @@ END;
 GO
 
 
-
-
 -- Procedimiento almacenado para eliminar lógicamente una orden
 CREATE PROCEDURE p_Eliminar_Orden
     @idOrden INT
@@ -433,7 +439,7 @@ BEGIN
         BEGIN TRANSACTION;
 
         -- Actualizar el estado de la orden a inactiva (0 = inactivo)
-        UPDATE Orden
+        UPDATE Ordenes
         SET estados_idestados = 0
         WHERE idOrden = @idOrden;
 
@@ -715,7 +721,7 @@ WHERE estados_idestados = 1 AND stock > 0;
 GO
 CREATE VIEW v_Vista_Ordenes_Agosto_2024 AS
 SELECT SUM(total_orden) AS TotalQuetzales
-FROM Orden
+FROM Ordenes
 WHERE MONTH(fecha_creacion) = 8 AND YEAR(fecha_creacion) = 2024;
 
 
@@ -725,7 +731,7 @@ CREATE VIEW v_Top10_Clientes_Mayor_Consumo AS
 SELECT c.idclientes, c.nombre_comercial, SUM(o.total_orden) AS TotalConsumo
 FROM Clientes c
 JOIN usuarios u ON u.clientes_idclientes = c.idclientes
-JOIN Orden o ON o.usuarios_idusuarios = u.idusuarios
+JOIN Ordenes o ON o.usuarios_idusuarios = u.idusuarios
 GROUP BY c.idclientes, c.nombre_comercial
 ORDER BY TotalConsumo DESC
 OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
@@ -882,6 +888,7 @@ DECLARE @jsonDetalles NVARCHAR(MAX) = '[
 EXEC p_Insertar_Orden
     @usuarios_idusuarios = 1,
 	@estados_idestados = 1,
+	@nombre_completo = "Juan Paco Pedro de la Mar",
     @direccion = '123 Calle Principal',
     @telefono = '555-123-4567',
     @correo_electronico = 'cliente@email.com',
@@ -892,22 +899,36 @@ EXEC p_Insertar_Orden
 
 	GO
 
-
------- MODIFICAR UNA ORDEN --------------
-DECLARE @jsonDetalles NVARCHAR(MAX) = '[
-    {"Productos_idProductos": 1, "cantidad": 3, "precio": 150.00, "subtotal": 450.00}
+	DECLARE @jsonDetalles NVARCHAR(MAX) = 
+'[
+    {
+        "Productos_idProductos": 1,
+        "cantidad": 3,
+        "precio": 7.99,
+        "subtotal": 23.97
+    },
+    {
+        "Productos_idProductos": 1,
+        "cantidad": 1,
+        "precio": 12.50,
+        "subtotal": 12.50
+    }
 ]';
 
-EXEC p_Modificar_Orden
-    @idOrden = 1,
-    @direccion = '456 Calle Actualizada',
-    @telefono = '555-987-6543',
-    @correo_electronico = 'cliente@actualizado.com',
-    @fecha_entrega = '2024-09-01',
-    @total_orden = 850.00,
+GO
+
+EXEC p_Modificar_Orden 
+    @idOrden = 1, -- ID de la orden a modificar
+    @estados_idestados = 1,
+    @nombre_completo = 'Ana López',
+    @direccion = 'Calle Nueva 456',
+    @telefono = '987-654-3210',
+    @correo_electronico = 'ana.lopez@example.com',
+    @fecha_entrega = '2024-04-01',
+    @total_orden = 36.47,
     @jsonDetalles = @jsonDetalles;
 
-
+GO
 ---------- ELIMINAR UNA ORDEN -------------------
 
 EXEC p_Eliminar_Orden @idOrden = 1;
@@ -974,7 +995,7 @@ select * from  Clientes;
 
 SELECT * FROM estados;
 
-SELECT * FROM Orden;
+SELECT * FROM Ordenes;
 
 SELECT * FROM OrdenDetalles;
 

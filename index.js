@@ -6,6 +6,7 @@ const estadoRoutes = require('./routes/estadoRoutes')
 const clienteRoutes = require('./routes/clienteRoutes')
 const categoriaProdRoutes = require('./routes/categoriaProdRoutes')
 const usuariosRoutes = require('./routes/usuariosRoutes')
+const ordenRoutes = require('./routes/ordenRoutes')
 var app = express();
 var port = 3000;
 
@@ -23,6 +24,7 @@ app.use("/api/estado", estadoRoutes);
 app.use("/api/clientes", clienteRoutes)
 app.use("/api/categoria", categoriaProdRoutes)
 app.use("/api/usuarios", usuariosRoutes)
+app.use("/api/ordenes", ordenRoutes)
 
 //Home
 app.get('/', async function(req, res){
