@@ -1,5 +1,5 @@
-GO
-DROP DATABASE[GDA0031_OT_DavidOrozco]
+--GO
+--DROP DATABASE[GDA0031_OT_DavidOrozco]
 
 -- CREACIÓN DE LA BASE DE DATOS
 CREATE DATABASE [GDA0031_OT_DavidOrozco];
@@ -318,7 +318,6 @@ GO
 
 
 --------------------ORDEN----------------------------
--- Creo que hay un problema con el nombre de la tabla jaaj F
 
 -- Insertar una orden con detalles usando JSON
 CREATE PROCEDURE p_Insertar_Orden
@@ -370,7 +369,7 @@ END;
 GO
 
 
--- Procedimiento almacenado para actualizar una orden y sus detalles-- Procedimiento almacenado para actualizar una orden y sus detalles
+-- Procedimiento almacenado para actualizar una orden y sus detalles
 CREATE PROCEDURE p_Modificar_Orden
     @idOrden INT,
     @estados_idestados INT,
@@ -443,9 +442,8 @@ BEGIN
         SET estados_idestados = 0
         WHERE idOrden = @idOrden;
 
-        -- Opcional: También marcar los detalles como inactivos
         UPDATE OrdenDetalles
-        SET cantidad = 0, subtotal = 0 -- Opcional: puedes añadir otra lógica aquí
+        SET cantidad = 0, subtotal = 0 
         WHERE Orden_idOrden = @idOrden;
 
         COMMIT TRANSACTION;
@@ -458,131 +456,6 @@ END;
 GO
 
 
-
-
-
-
-
-
-
----- Insertar una nueva orden
---CREATE PROCEDURE p_Insertar_Orden
---    @usuarios_idusuarios INT,
---    @estados_idestados INT,
---	@nombre_completo NVARCHAR(245),
---    @direccion NVARCHAR(245),
---    @telefono NVARCHAR(45),
---    @correo_electronico NVARCHAR(245),
---    @fecha_entrega DATE,
---    @total_orden FLOAT
---AS
---BEGIN
---    INSERT INTO Orden (usuarios_idusuarios, estados_idestados, fecha_creacion, nombre_completo,direccion, telefono, correo_electronico, fecha_entrega, total_orden)
---    VALUES (@usuarios_idusuarios, @estados_idestados, GETDATE(),@nombre_completo,@direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden);
---END;
---GO
-
-
-
-
----- Modificar una orden
---CREATE PROCEDURE p_Modificar_Orden
---    @idOrden INT,
---    @nuevoEstado INT = NULL,
---    @nuevoNombreCompleto NVARCHAR(245) = NULL,
---    @nuevaDireccion NVARCHAR(245) = NULL,
---    @nuevoTelefono NVARCHAR(45) = NULL,
---    @nuevoCorreoElectronico NVARCHAR(245) = NULL,
---    @nuevaFechaEntrega DATE = NULL,
---    @nuevoTotalOrden FLOAT = NULL
---AS
---BEGIN
---    UPDATE Orden
---    SET
---        estados_idestados = ISNULL(@nuevoEstado, estados_idestados),
---        nombre_completo = ISNULL(@nuevoNombreCompleto, nombre_completo),
---        direccion = ISNULL(@nuevaDireccion, direccion),
---        telefono = ISNULL(@nuevoTelefono, telefono),
---        correo_electronico = ISNULL(@nuevoCorreoElectronico, correo_electronico),
---        fecha_entrega = ISNULL(@nuevaFechaEntrega, fecha_entrega),
---        total_orden = ISNULL(@nuevoTotalOrden, total_orden)
---    WHERE idOrden = @idOrden;
---END;
-
-
---GO
-
-
-
-
-
-
----- Eliminar orden
---CREATE PROCEDURE p_Eliminar_Orden
---    @idOrden INT
---AS
---BEGIN
---	--Eliminamos los detalles
---    DELETE FROM OrdenDetalles
---    WHERE Orden_idOrden = @idOrden;
---	--Eliminiamos la orden
---    DELETE FROM Orden
---    WHERE idOrden = @idOrden;
---END;
-
---GO
-
-
-
---------------------ORDEN DETALLES---------------------------
-
----- Insertar detalles de la orden
---CREATE PROCEDURE p_Insertar_Orden_Detalles
---	@Orden_idOrden INT,
---	@Productos_idProductos INT,
---	@cantidad INT,
---	@precio FLOAT,
---	@subtotal FLOAT
---AS
---BEGIN
---	INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
---	VALUES (@Orden_idOrden, @Productos_idProductos, @cantidad, @precio, @subtotal)
---END;
-
---GO
-
-
----- Modificar detalles de una orden
---CREATE PROCEDURE p_Modificar_Detalle_Orden
---    @idOrdenDetalle INT,
---    @nuevaCantidad INT,
---    @nuevoPrecio FLOAT,
---	@subtotal FLOAT
---AS
---BEGIN
-    
---    UPDATE OrdenDetalles
---    SET
---        cantidad = ISNULL(@nuevaCantidad, cantidad),
---        precio = ISNULL(@nuevoPrecio, precio),
---        subtotal = @subtotal
---    WHERE idOrdenDetalles = @idOrdenDetalle;
---END;
-
---GO
-
-
----- Eliminar detalle orden
---CREATE PROCEDURE p_Eliminar_Detalle_Orden
---    @idOrdenDetalle INT
---AS
---BEGIN
---    DELETE FROM OrdenDetalles
---    WHERE idOrdenDetalles = @idOrdenDetalle;
---END;
-
---GO
-	   	 
 
 ---------------------CATEGORIA------------------------------------
 
@@ -760,37 +633,23 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
 ----------------------------------------------------
 
 
+
+
+
+------------ INIT  ------------------------------------
+
 ---------------ROL------------------
 GO
 EXEC p_Insertar_Rol
-	@nombre = 'Administrador'
+	@nombre = 'OPERADOR'
 
-EXEC p_Modificar_Rol 
-	@idrol = 1, 
-	@nombre = 'Admin';
-
-EXEC p_Eliminar_rol 
-	@idrol = 1;
-
+GO
 -----------ESTADOS---------------------------
 
 EXEC p_Insertar_Estado
 	@nombre = 'Activo'
 
-EXEC p_Modificar_Estado 
-	@idestados = 1, 
-	@nombre = 'Inactivo';
-
-EXEC p_Eliminar_Estado 
-	@idestados = 1;
-
-
-EXEC p_Insertar_Estado
-	@nombre = 'Inactivo'
-
-
-------------CLIENTE----------------------
-
+	GO
 -- Insertar un cliente
 EXEC p_Insertar_Cliente 
     @razon_social = 'Comercial 2',
@@ -799,19 +658,7 @@ EXEC p_Insertar_Cliente
     @telefono = '12345678',
     @email = 'cliente@test.com';
 
--- Modificar información de un cliente
-EXEC p_Modificar_Cliente 
-    @idclientes = 1,
-    @razon_social = 'Comercial ABC',
-    @telefono = '87654321';
-
--- Desabilitar un cliente
-EXEC p_Inactivar_Cliente 
-	@idclientes = 1;
-
-
-
-
+	GO
 -----------------USUARIO---------------------
 
 EXEC p_Insertar_Usuario 
@@ -824,14 +671,7 @@ EXEC p_Insertar_Usuario
 	@fecha_nacimiento = '2020-12-20', 
 	@clientes_idclientes = 1;
 
-
-EXEC p_Cambiar_Estado_Usuario 
-    @idUsuario = 1,
-    @nuevoEstado = 2;
-
-	   
-
-
+	GO
 --------------CATEGORIA------------------------
 
 -- Insertar una categoría
@@ -839,20 +679,9 @@ EXEC p_Insertar_Categoria
     @nombre = 'Electrónica',
     @usuarios_idusuarios = 1,
     @estados_idestados = 1;
-
-
-EXEC p_Cambiar_Estado_Categoria 
-    @idCategoria = 2,
-	@estados_idEstados = 1;
-
-
-EXEC p_Cambiar_Estado_Categoria 
-	@idCategoria = 1, 
-	@estados_idestados = 2;
-
-
-
--------------PRODUCTO----------------------
+	
+--------------PRODUCTO------------------------
+	GO
 
 -- Insertar un producto
 EXEC p_Insertar_Producto 
@@ -865,170 +694,193 @@ EXEC p_Insertar_Producto
     @precio = 99.99,
     @foto = NULL; -- Si no se tiene imagen inicial
 
--- Desabilitar producto
-EXEC p_Cambiar_Estado_Producto 
-    @idProducto = 3,
-	@idEstado = 1;
-
--- Actualizar el stock de un producto
-EXEC p_Actualizar_Stock_Producto 
-    @idProducto = 1,
-    @nuevoStock = 250;
 
 
+	--------------------------------------------------------------------
+	------------------- EXTRAS  ------------------------------------
+	--------------------------------------------------------------------
+	
+-----------------ROL------------------
+--GO
+--EXEC p_Insertar_Rol
+--	@nombre = 'OPERADOR'
 
-----------------ORDEN ACTUALIZADO--------------------
+--EXEC p_Modificar_Rol 
+--	@idrol = 1, 
+--	@nombre = 'OPERADOR';
 
------------------ INSERTAR UNA ORDEN ----------------
+--EXEC p_Eliminar_rol 
+--	@idrol = 1;
 
-DECLARE @jsonDetalles NVARCHAR(MAX) = '[
-    {"Productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00}
-]';
+-------------ESTADOS---------------------------
 
-EXEC p_Insertar_Orden
-    @usuarios_idusuarios = 1,
-	@estados_idestados = 1,
-	@nombre_completo = "Juan Paco Pedro de la Mar",
-    @direccion = '123 Calle Principal',
-    @telefono = '555-123-4567',
-    @correo_electronico = 'cliente@email.com',
-    @fecha_entrega = '2024-08-15',
-    @total_orden = 500.00,
-    @jsonDetalles = @jsonDetalles;
+--EXEC p_Insertar_Estado
+--	@nombre = 'Activo'
 
+--EXEC p_Modificar_Estado 
+--	@idestados = 1, 
+--	@nombre = 'Inactivo';
 
-	GO
-
-	DECLARE @jsonDetalles NVARCHAR(MAX) = 
-'[
-    {
-        "Productos_idProductos": 1,
-        "cantidad": 3,
-        "precio": 7.99,
-        "subtotal": 23.97
-    },
-    {
-        "Productos_idProductos": 1,
-        "cantidad": 1,
-        "precio": 12.50,
-        "subtotal": 12.50
-    }
-]';
-
-GO
-
-EXEC p_Modificar_Orden 
-    @idOrden = 1, -- ID de la orden a modificar
-    @estados_idestados = 1,
-    @nombre_completo = 'Ana López',
-    @direccion = 'Calle Nueva 456',
-    @telefono = '987-654-3210',
-    @correo_electronico = 'ana.lopez@example.com',
-    @fecha_entrega = '2024-04-01',
-    @total_orden = 36.47,
-    @jsonDetalles = @jsonDetalles;
-
-GO
----------- ELIMINAR UNA ORDEN -------------------
-
-EXEC p_Eliminar_Orden @idOrden = 1;
+--EXEC p_Eliminar_Estado 
+--	@idestados = 1;
 
 
+--EXEC p_Insertar_Estado
+--	@nombre = 'Inactivo'
 
 
+--------------CLIENTE----------------------
 
-
--------------------ORDEN-------------------------------
-
----- Insertar una orden
---EXEC p_Insertar_Orden 
---    @usuarios_idusuarios = 1,
---    @estados_idestados = 1,
---	@nombre_completo = 'Cliente nuevo 1',
---    @direccion = 'Zona 40, Guatemala',
+---- Insertar un cliente
+--EXEC p_Insertar_Cliente 
+--    @razon_social = 'Comercial 2',
+--    @nombre_comercial = 'Mi Negocio',
+--    @direccion_entrega = 'Calle Falsa 123',
 --    @telefono = '12345678',
---    @correo_electronico = 'cliente@ejemplo.com',
---    @fecha_entrega = '2020-12-20',
---    @total_orden = 1500.50;
+--    @email = 'cliente@test.com';
+
+---- Modificar información de un cliente
+--EXEC p_Modificar_Cliente 
+--    @idclientes = 1,
+--    @razon_social = 'Comercial ABC',
+--    @telefono = '87654321';
+
+---- Desabilitar un cliente
+--EXEC p_Inactivar_Cliente 
+--	@idclientes = 1;
 
 
 
----- Modificar datos de una orden ( Ojo no los detalles )
+
+-------------------USUARIO---------------------
+
+--EXEC p_Insertar_Usuario 
+--	@rol_idrol = 1 ,
+--	@estados_idestados = 1,
+--	@correo_electronico = 'test@test.com', 
+--	@nombre_completo = 'Usuario Nuevo', 
+--	@password = '123456789', 
+--	@telefono = '12345678', 
+--	@fecha_nacimiento = '2020-12-20', 
+--	@clientes_idclientes = 1;
+
+
+--EXEC p_Cambiar_Estado_Usuario 
+--    @idUsuario = 1,
+--    @nuevoEstado = 2;
+
+	   
+
+
+----------------CATEGORIA------------------------
+
+---- Insertar una categoría
+--EXEC p_Insertar_Categoria
+--    @nombre = 'Electrónica',
+--    @usuarios_idusuarios = 1,
+--    @estados_idestados = 1;
+
+
+--EXEC p_Cambiar_Estado_Categoria 
+--    @idCategoria = 2,
+--	@estados_idEstados = 1;
+
+
+--EXEC p_Cambiar_Estado_Categoria 
+--	@idCategoria = 1, 
+--	@estados_idestados = 2;
+
+
+
+---------------PRODUCTO----------------------
+
+---- Insertar un producto
+--EXEC p_Insertar_Producto 
+--    @CategoriaProductos_idCategoriaProductos = 1,
+--    @usuarios_idusuarios = 1,
+--    @nombre = 'Aceite Maxima 007',
+--    @marca = 'Pum',
+--    @codigo = 'AMP',
+--    @stock = 20,
+--    @precio = 99.99,
+--    @foto = NULL; -- Si no se tiene imagen inicial
+
+---- Desabilitar producto
+--EXEC p_Cambiar_Estado_Producto 
+--    @idProducto = 3,
+--	@idEstado = 1;
+
+---- Actualizar el stock de un producto
+--EXEC p_Actualizar_Stock_Producto 
+--    @idProducto = 1,
+--    @nuevoStock = 250;
+
+
+
+------------------ORDEN ACTUALIZADO--------------------
+
+------------------- INSERTAR UNA ORDEN ----------------
+
+--DECLARE @jsonDetalles NVARCHAR(MAX) = '[
+--    {"Productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00}
+--]';
+
+--EXEC p_Insertar_Orden
+--    @usuarios_idusuarios = 1,
+--	@estados_idestados = 1,
+--	@nombre_completo = "Juan Paco Pedro de la Mar",
+--    @direccion = '123 Calle Principal',
+--    @telefono = '555-123-4567',
+--    @correo_electronico = 'cliente@email.com',
+--    @fecha_entrega = '2024-08-15',
+--    @total_orden = 500.00,
+--    @jsonDetalles = @jsonDetalles;
+
+
+--	GO
+
+
+--GO
+
 --EXEC p_Modificar_Orden 
---    @idOrden = 1,
---    @nuevoEstado = 2, -- Desabilitamos la orden
---    @nuevoNombreCompleto = 'Jackie Chan',
---    @nuevaDireccion = 'Algun Lugar 555 av.',
---    @nuevoTelefono = '1234567890',
---    @nuevoCorreoElectronico = 'Chan@test.com',
---    @nuevaFechaEntrega = '2024-12-21',
---    @nuevoTotalOrden = 600.00;
-
-
----- Desabilitar una orden
---EXEC p_Eliminar_Orden 
---	@idOrden = 1;
-
-
-
------------------ORDEN DETALLES-----------------------------
-
-
---EXEC p_Insertar_Orden_Detalles
---	@Orden_idOrden = 1, 
---	@Productos_idProductos = 1, 
---	@cantidad = 1, 
---	@precio = 19.99, 
---	@subtotal = 19.99
-
-
-
-
---EXEC p_Eliminar_Detalle_Orden 
---	@idOrdenDetalle = 1;
+--    @idOrden = 1, -- ID de la orden a modificar
+--    @estados_idestados = 1,
+--    @nombre_completo = 'Ana López',
+--    @direccion = 'Calle Nueva 456',
+--    @telefono = '987-654-3210',
+--    @correo_electronico = 'ana.lopez@example.com',
+--    @fecha_entrega = '2024-04-01',
+--    @total_orden = 36.47,
+--    @jsonDetalles = @jsonDetalles;
 
 --GO
+------------ ELIMINAR UNA ORDEN -------------------
 
---		QUERY
-
-select * from  Clientes;
-
-SELECT * FROM estados;
-
-SELECT * FROM Ordenes;
-
-SELECT * FROM OrdenDetalles;
-
-SELECT * FROM CategoriaProductos;
-
-SELECT * FROM Productos;
-
-SELECT * FROM usuarios;
+--EXEC p_Eliminar_Orden @idOrden = 1;
 
 
--- TEST QUERY
-select * from  sys.tables;
 
 
---GO
--- INSERCIÓN DE DATOS DE EJEMPLO
---INSERT INTO estados (nombre) VALUES ('Activo'), ('Inactivo');
+----		QUERY
+
+--select * from  Clientes;
+
+--SELECT * FROM estados;
+
+--SELECT * FROM Ordenes;
+
+--SELECT * FROM OrdenDetalles;
+
+--SELECT * FROM CategoriaProductos;
+
+--SELECT * FROM Productos;
+
+--SELECT * FROM usuarios;
 
 
---GO
---INSERT INTO rol (nombre) VALUES ('Administrador'), ('Vendedor');
+---- TEST QUERY
+--select * from  sys.tables;
 
-
---GO
---INSERT INTO Clientes (razon_social, nombre_comercial, direccion_entrega, telefono, email)
---VALUES ('Empresa 1', 'Comercial 1', 'Direccion 1', '12345678', 'correo1@example.com');
-
-
---GO
---INSERT INTO usuarios (rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, clientes_idclientes)
---VALUES (1, 1, 'admin@example.com', 'Administrador General', '123456', '87654321', 1);
-
---GO
 
 
 
@@ -1041,9 +893,9 @@ SELECT * FROM v_Top10_Productos_Mas_Vendidos;
 SELECT * FROM v_Vista_Ordenes_Agosto_2024;
 
 
--- EXTRAS
+---- EXTRAS
 
-SELECT * FROM sys.sysprocesses WHERE dbid = DB_ID('GDA0031_OT_DavidOrozco');
+--SELECT * FROM sys.sysprocesses WHERE dbid = DB_ID('GDA0031_OT_DavidOrozco');
 
 
-KILL 51;
+----KILL 51;

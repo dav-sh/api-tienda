@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const ordenController = require('../controllers/ordenController'); // Ajusta la ruta si es necesario
+const ordenController = require('../controllers/ordenController');
+const { verifyToken, authorize, roles} = require('../middleware/auth')
 
-router.post('/', ordenController.createOrden); // Ruta para crear una orden
-router.put('/:id', ordenController.updateOrden); // Ruta para actualizar una orden
+router.post('/', verifyToken, authorize(roles.CLIENTE, roles.OPERADOR), ordenController.createOrden); 
+router.put('/:id', verifyToken, authorize( roles.OPERADOR), ordenController.updateOrden); 
 
 module.exports = router;

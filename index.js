@@ -7,6 +7,7 @@ const clienteRoutes = require('./routes/clienteRoutes')
 const categoriaProdRoutes = require('./routes/categoriaProdRoutes')
 const usuariosRoutes = require('./routes/usuariosRoutes')
 const ordenRoutes = require('./routes/ordenRoutes')
+const authRoutes = require('./routes/authRoutes')
 var app = express();
 var port = 3000;
 
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 
 
 //Rutas
+app.use('/api/auth', authRoutes);
 app.use("/api/productos", productosRoutes);
 app.use("/api/estado", estadoRoutes);
 app.use("/api/clientes", clienteRoutes)

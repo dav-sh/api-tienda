@@ -1,6 +1,10 @@
 const sequelize = require('../config/db');
 const { QueryTypes } = require('sequelize');
 
+
+
+
+
 // Obtener todos los productos
 const getProductos = async (req, res) => {
   try {
