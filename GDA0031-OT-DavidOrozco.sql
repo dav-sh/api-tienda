@@ -36,7 +36,7 @@ CREATE TABLE usuarios (
     estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
     correo_electronico NVARCHAR(245) NOT NULL,
     nombre_completo NVARCHAR(245) NOT NULL,
-    password NVARCHAR(45) NOT NULL,
+    password NVARCHAR(75) NOT NULL,
     telefono NVARCHAR(45),
     fecha_nacimiento DATE,
     fecha_creacion DATETIME DEFAULT GETDATE(),
@@ -254,7 +254,7 @@ CREATE PROCEDURE p_Insertar_Usuario
     @estados_idestados INT,
     @correo_electronico NVARCHAR(245),
     @nombre_completo NVARCHAR(245),
-    @password NVARCHAR(45),
+    @password NVARCHAR(75),
     @telefono NVARCHAR(45),
     @fecha_nacimiento DATE,
     @clientes_idclientes INT
@@ -275,7 +275,7 @@ CREATE PROCEDURE p_Modificar_Usuario
     @estados_idestados INT = NULL,
     @correo_electronico NVARCHAR(245) = NULL,
     @nombre_completo NVARCHAR(245) = NULL,
-    @password NVARCHAR(45) = NULL,
+    @password NVARCHAR(75) = NULL,
     @telefono NVARCHAR(45) = NULL,
     @fecha_nacimiento DATE = NULL,
     @clientes_idclientes INT = NULL
@@ -666,7 +666,7 @@ EXEC p_Insertar_Usuario
 	@estados_idestados = 1,
 	@correo_electronico = 'test@test.com', 
 	@nombre_completo = 'Usuario Nuevo', 
-	@password = '123456789', 
+	@password = '$2b$10$tB1.x630p0SxjEz/gAkEd.ag36.K/yXwpfhMnEzT5J15SDCEWG23W',    --1234
 	@telefono = '12345678', 
 	@fecha_nacimiento = '2020-12-20', 
 	@clientes_idclientes = 1;
