@@ -1,7 +1,17 @@
 const sequelize = require('../config/db');
 const { QueryTypes } = require('sequelize');
 const Usuarios = require('../models/Usuarios'); 
-const bcrypt = require('bcrypt'); 
+const {encrypt, compare} = require('../helpers/handleBcrypt')
+
+
+const getUsuarios = async (req, res) => {
+  try {
+    const data = await Usuarios.findAll()
+    return res.json(data);
+  }catch (error){
+    return res.json(error).status(404);
+  }
+}
 
 
 // Insertar un nuevo usuario
@@ -14,10 +24,11 @@ const createUsuario = async (req, res) => {
       return res.status(409).json({ error: 'El usuario ya existe' });
     }
 
+    const pwEncrypted = await encrypt(password)
     await sequelize.query(
       'EXEC p_Insertar_Usuario :rol_idrol, :estados_idestados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idclientes',
       {
-        replacements: { rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, clientes_idclientes },
+        replacements: { rol_idrol, estados_idestados, correo_electronico, nombre_completo, password: pwEncrypted, telefono, fecha_nacimiento, clientes_idclientes },
         type: QueryTypes.INSERT,
       }
     );
@@ -42,16 +53,16 @@ const updateUsuario = async (req, res) => {
       }
   
       // Si se proporciona una nueva contraseña, encriptarla
+      let pwEncrypted = ''
       if (password) {
-        const saltRounds = 10;
-        password = await bcrypt.hash(password, saltRounds);
+        pwEncrypted = await encrypt(password)
       }
   
       // Actualiza el usuario en la base de datos
       await sequelize.query(
         'EXEC p_Modificar_Usuario :idusuarios, :rol_idrol, :estados_idestados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idclientes',
         {
-          replacements: { idusuarios, rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, clientes_idclientes },
+          replacements: { idusuarios, rol_idrol, estados_idestados, correo_electronico, nombre_completo, password : pwEncrypted, telefono, fecha_nacimiento, clientes_idclientes },
           type: QueryTypes.UPDATE,
         }
       );
@@ -67,4 +78,4 @@ const updateUsuario = async (req, res) => {
 
 
 
-module.exports = {createUsuario, updateUsuario}
+module.exports = {createUsuario, updateUsuario, getUsuarios}
