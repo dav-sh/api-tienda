@@ -34,7 +34,7 @@ const Usuarios = sequelize.define('Usuarios', {
     allowNull: false,
   },
   password: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(75),
     allowNull: false,
   },
   telefono: {
