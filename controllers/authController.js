@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
 const Usuarios = require("../models/Usuarios");
 const { compare } = require("../helpers/handleBcrypt");
+const { generateToken } = require("../helpers/jwtToken");
 // Generar un token (solo para pruebas)
 
 const login = async (req, res) => {
@@ -22,7 +22,7 @@ const login = async (req, res) => {
     //console.log(password)
     //console.log(user.get('password'))
     // Verificamos la contraseña
-    const isPasswordValid = await compare(password, user.get('password'));
+    const isPasswordValid = await compare(password, user.get("password"));
     //console.log(isPasswordValid)
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Incorrect password" });
@@ -31,11 +31,7 @@ const login = async (req, res) => {
     // Generar el token JWT
     // console.log(user.get('idusuarios'))
     // console.log( user.get('rol_idrol'))
-    const token = jwt.sign(
-      { userId: user.get('idusuarios'), role: user.get('rol_idrol') },
-      process.env.SECRET_KEY,
-      { expiresIn: "24h" }
-    );
+    const token = await generateToken(user);
     // console.log(token);
     res.json({ token });
   } catch (error) {

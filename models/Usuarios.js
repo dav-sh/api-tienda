@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db')
-const bcrypt = require('bcrypt');
 
 const Usuarios = sequelize.define('Usuarios', {
   idusuarios: {
@@ -63,32 +62,19 @@ const Usuarios = sequelize.define('Usuarios', {
   timestamps: false,
 });
 
-// Hook para encriptar la contraseña antes de guardar el usuario
-Usuarios.beforeCreate(async (user) => {
-  const rondas = 10; 
-  user.password = await bcrypt.hash(user.password, rondas);
-});
+// // Hook para encriptar la contraseña antes de guardar el usuario
+// Usuarios.beforeCreate(async (user) => {
+//   const rondas = 10; 
+//   user.password = await bcrypt.hash(user.password, rondas);
+// });
 
 
-// Relacion Usuarios con Roles
-Usuarios.associate = (models) => {
-  Usuarios.belongsTo(models.Roles, {
-    foreignKey: 'rol_idrol',
-    as: 'rol',
-  });
-
-  // Relacion Usuarios con Estados
-  Usuarios.belongsTo(models.Estados, {
-    foreignKey: 'estados_idestados',
-    as: 'estado',
-  });
-
-  // Relacion Usuarios con Clientes
-  Usuarios.belongsTo(models.Clientes, {
-    foreignKey: 'clientes_idclientes',
-    as: 'cliente',
-  });
-};
-
-
+// // Sincroniza los modelos con la base de datos
+// sequelize.sync({alter: true})
+//   .then(() => {
+//     console.log('Modelos sincronizados con la base de datos.');
+//   })
+//   .catch(err => {
+//     console.error('Error al sincronizar modelos:', err);
+//   });
 module.exports = Usuarios;

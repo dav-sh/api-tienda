@@ -11,12 +11,12 @@ USE [GDA0031_OT_DavidOrozco];
 
 GO
 -- CREACIÓN DE TABLAS
-CREATE TABLE estados (
+CREATE TABLE Estados (
     idestados INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(45) NOT NULL
 );
 
-CREATE TABLE rol (
+CREATE TABLE Roles (
     idrol INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(45) NOT NULL
 );
@@ -30,10 +30,10 @@ CREATE TABLE Clientes (
     email NVARCHAR(45)
 );
 
-CREATE TABLE usuarios (
+CREATE TABLE Usuarios (
     idusuarios INT IDENTITY(1,1) PRIMARY KEY,
-    rol_idrol INT NOT NULL FOREIGN KEY REFERENCES rol(idrol),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
+    rol_idrol INT NOT NULL FOREIGN KEY REFERENCES Roles(idrol),
+    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
     correo_electronico NVARCHAR(245) NOT NULL,
     nombre_completo NVARCHAR(245) NOT NULL,
     password NVARCHAR(75) NOT NULL,
@@ -45,8 +45,8 @@ CREATE TABLE usuarios (
 
 CREATE TABLE CategoriaProductos (
     idcategoriaProductos INT IDENTITY(1,1) PRIMARY KEY,
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
+    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
+    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
     nombre NVARCHAR(45),
     fecha_creacion DATETIME DEFAULT GETDATE()
 );
@@ -54,8 +54,8 @@ CREATE TABLE CategoriaProductos (
 CREATE TABLE Productos (
     idProductos INT IDENTITY(1,1) PRIMARY KEY,
     CategoriaProductos_idCategoriaProductos INT NOT NULL FOREIGN KEY REFERENCES CategoriaProductos(idcategoriaProductos),
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
+    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
+    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
     nombre NVARCHAR(45),
     marca NVARCHAR(45),
     codigo NVARCHAR(45),
@@ -67,8 +67,8 @@ CREATE TABLE Productos (
 
 CREATE TABLE Ordenes (
     idOrden INT IDENTITY(1,1) PRIMARY KEY,
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES estados(idestados),
+    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
+    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
     fecha_creacion DATETIME DEFAULT GETDATE(),
     nombre_completo NVARCHAR(245),
     direccion NVARCHAR(245),
@@ -98,15 +98,15 @@ CREATE TABLE OrdenDetalles (
 --			 PROCEDIMIENTOS ALMACENADOS
 
 GO
--------------------------ROL ------------------------------------
+-------------------------Roles ------------------------------------
 
 
--- Insertar un rol nuevo
+-- Insertar un Roles nuevo
 CREATE PROC p_Insertar_Rol
 	@nombre NVARCHAR(45)
 AS
 BEGIN
-	INSERT INTO rol (nombre)
+	INSERT INTO Roles (nombre)
 	VALUES (@nombre)
 END;
 
@@ -116,13 +116,13 @@ GO
 
 
 
--- Modificar un rol
+-- Modificar un Roles
 CREATE PROCEDURE p_Modificar_Rol
 	@idrol INT,
 	@nombre NVARCHAR(45)
 AS
 BEGIN
-	UPDATE rol
+	UPDATE Roles
 	SET 
 		nombre = ISNULL(@nombre, nombre)
 	WHERE idrol = @idrol;
@@ -133,12 +133,12 @@ GO
 
 
 
--- Eliminar un rol
-CREATE PROCEDURE p_Eliminar_rol
+-- Eliminar un Roles
+CREATE PROCEDURE p_Eliminar_Rol
 	@idrol INT
 AS
 BEGIN
-	DELETE FROM rol 
+	DELETE FROM Roles 
 	WHERE idrol = @idrol;
 END;
 
@@ -156,7 +156,7 @@ CREATE PROC p_Insertar_Estado
 	@nombre NVARCHAR(45)
 AS
 BEGIN
-	INSERT INTO estados (nombre)
+	INSERT INTO Estados (nombre)
 	VALUES (@nombre)
 END;
 
@@ -169,7 +169,7 @@ CREATE PROCEDURE p_Modificar_Estado
 	@nombre NVARCHAR(45)
 AS
 BEGIN
-	UPDATE estados 
+	UPDATE Estados 
 	SET 
 		nombre = ISNULL(@nombre, nombre)
 	WHERE idestados = @idestados;
@@ -184,7 +184,7 @@ CREATE PROCEDURE p_Eliminar_Estado
 	@idestados INT
 AS
 BEGIN
-	DELETE FROM estados 
+	DELETE FROM Estados 
 	WHERE idestados = @idestados;
 END;
 
@@ -245,7 +245,7 @@ GO
 
 
 
-------------------USUARIOS-----------------------
+------------------Usuarios-----------------------
 --				SUGERIDO
 GO
 -- Insertar un nuevo usuario
@@ -260,7 +260,7 @@ CREATE PROCEDURE p_Insertar_Usuario
     @clientes_idclientes INT
 AS
 BEGIN
-    INSERT INTO usuarios (rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion,clientes_idclientes)
+    INSERT INTO Usuarios (rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion,clientes_idclientes)
     VALUES (@rol_idrol, @estados_idestados, @correo_electronico, @nombre_completo, @password, @telefono, @fecha_nacimiento, GETDATE(), @clientes_idclientes);
 END;
 
@@ -304,7 +304,7 @@ CREATE PROCEDURE p_Cambiar_Estado_Usuario
     @nuevoEstado INT
 AS
 BEGIN
-    UPDATE usuarios
+    UPDATE Usuarios
     SET estados_idestados = @nuevoEstado
     WHERE idusuarios = @idUsuario;
 END;
@@ -603,7 +603,7 @@ GO
 CREATE VIEW v_Top10_Clientes_Mayor_Consumo AS
 SELECT c.idclientes, c.nombre_comercial, SUM(o.total_orden) AS TotalConsumo
 FROM Clientes c
-JOIN usuarios u ON u.clientes_idclientes = c.idclientes
+JOIN Usuarios u ON u.clientes_idclientes = c.idclientes
 JOIN Ordenes o ON o.usuarios_idusuarios = u.idusuarios
 GROUP BY c.idclientes, c.nombre_comercial
 ORDER BY TotalConsumo DESC
@@ -638,13 +638,18 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
 
 ------------ INIT  ------------------------------------
 
----------------ROL------------------
+---------------Roles------------------
 GO
 EXEC p_Insertar_Rol
 	@nombre = 'OPERADOR'
 
 GO
------------ESTADOS---------------------------
+
+GO
+EXEC p_Insertar_Rol
+	@nombre = 'USUARIO'
+GO
+-----------Estados---------------------------
 
 EXEC p_Insertar_Estado
 	@nombre = 'Activo'
@@ -700,7 +705,7 @@ EXEC p_Insertar_Producto
 	------------------- EXTRAS  ------------------------------------
 	--------------------------------------------------------------------
 	
------------------ROL------------------
+-----------------Roles------------------
 --GO
 --EXEC p_Insertar_Rol
 --	@nombre = 'OPERADOR'
@@ -712,7 +717,7 @@ EXEC p_Insertar_Producto
 --EXEC p_Eliminar_rol 
 --	@idrol = 1;
 
--------------ESTADOS---------------------------
+-------------Estados---------------------------
 
 --EXEC p_Insertar_Estado
 --	@nombre = 'Activo'
@@ -865,7 +870,7 @@ EXEC p_Insertar_Producto
 
 --select * from  Clientes;
 
---SELECT * FROM estados;
+--SELECT * FROM Estados;
 
 --SELECT * FROM Ordenes;
 
@@ -875,7 +880,7 @@ EXEC p_Insertar_Producto
 
 --SELECT * FROM Productos;
 
---SELECT * FROM usuarios;
+--SELECT * FROM Usuarios;
 
 
 ---- TEST QUERY

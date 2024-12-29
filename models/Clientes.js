@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db')
 
-const Cliente = sequelize.define('Cliente', {
+
+const Clientes = sequelize.define('Clientes', {
   idclientes: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -31,13 +33,6 @@ const Cliente = sequelize.define('Cliente', {
   timestamps: false,
 });
 
-// Relaciones de Cliente
-Cliente.associate = (models) => {
-  Cliente.hasMany(models.Usuarios, {
-    foreignKey: "clientes_idclientes",
-    as: "usuarios",
-  });
-};
 
 
-module.exports = Cliente;
+module.exports = Clientes;
