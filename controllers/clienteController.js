@@ -1,7 +1,16 @@
 const sequelize = require("../config/db");
 const { QueryTypes } = require('sequelize');
+const { Clientes} = require('../config/indexDB')
 
 
+const getClientes = async (req,res) =>{
+  try {
+    const data = await Clientes.findAll()
+    res.json(data)
+  } catch (error) {
+    res.json({message: 'Data not found'})
+  }
+}
 
 // Insertar un nuevo cliente
 const createCliente = async (req, res) => {
@@ -38,4 +47,4 @@ const updateCliente = async (req, res) => {
   }
 };
 
-module.exports = {createCliente, updateCliente}
+module.exports = {createCliente, updateCliente, getClientes}

@@ -14,8 +14,8 @@ const sequelize = new Sequelize(
     //     trustServerCertificate: true
     //   }
     // },
-    port: process.env.PORT 
-
+    port: process.env.PORT ,
+    // logging: console.log
   }
 );
 

@@ -5,7 +5,7 @@ const { Estados } = require("../models/Estados");
 
 
 const CategoriaProductos = sequelize.define('CategoriaProductos', {
-  idcategoriaProductos: {
+  idCategoriaProductos: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
@@ -15,20 +15,20 @@ const CategoriaProductos = sequelize.define('CategoriaProductos', {
     allowNull: false,
     unique: true, //Nombre unico
   },
-  usuarios_idusuarios: {
+  usuarios_idUsuarios: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Usuarios',
-      key: 'idusuarios',
+      key: 'idUsuarios',
     },
   },
-  estados_idestados: {
+  estados_idEstados: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Estados',
-      key: 'idestados',
+      key: 'idEstados',
     },
   },
   fecha_creacion: {

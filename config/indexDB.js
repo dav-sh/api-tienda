@@ -11,12 +11,12 @@ const Usuarios = require("../models/Usuarios");
 // console.log(Clientes)
 // Relaciones de CategoriaProductos
 CategoriaProductos.belongsTo(Usuarios, {
-  foreignKey: "usuarios_idusuarios",
+  foreignKey: "usuarios_idUsuarios",
   as: "usuario",
 });
 
 CategoriaProductos.belongsTo(Estados, {
-  foreignKey: "estados_idestados",
+  foreignKey: "estados_idEstados",
   as: "estado",
 });
 
@@ -27,18 +27,18 @@ CategoriaProductos.hasMany(Productos, {
 
 // Relaciones de Clientes
 Clientes.hasMany(Usuarios, {
-  foreignKey: "clientes_idclientes",
+  foreignKey: "clientes_idClientes",
   as: "usuarios",
 });
 
 // Relaciones de Ordenes
 Ordenes.belongsTo(Usuarios, {
-  foreignKey: "usuarios_idusuarios",
+  foreignKey: "usuarios_idUsuarios",
   as: "usuario",
 });
 
 Ordenes.belongsTo(Estados, {
-  foreignKey: "estados_idestados",
+  foreignKey: "estados_idEstados",
   as: "estado",
 });
 
@@ -65,7 +65,7 @@ Productos.belongsTo(CategoriaProductos, {
 });
 
 Productos.belongsTo(Estados, {
-  foreignKey: "estados_idestados",
+  foreignKey: "estados_idEstados",
   as: "estado",
 });
 
@@ -76,24 +76,26 @@ Productos.hasMany(OrdenDetalles, {
 
 // Relaciones de Roles
 Roles.hasMany(Usuarios, {
-  foreignKey: "rol_idrol",
+  foreignKey: "rol_idRol",
 });
 // console.log(Usuarios)
 // Relaciones de Usuarios
 Usuarios.belongsTo(Roles, {
-  foreignKey: "rol_idrol",
+  foreignKey: "rol_idRol",
   as: "rol",
 });
 
-
+Usuarios.hasMany(Ordenes, {
+  foreignKey: "usuarios_idUsuarios",
+})
 
 Usuarios.belongsTo(Estados, {
-  foreignKey: "estados_idestados",
+  foreignKey: "estados_idEstados",
   as: "estado",
 });
 
 Usuarios.belongsTo(Clientes, {
-  foreignKey: "clientes_idclientes",
+  foreignKey: "clientes_idClientes",
   as: "cliente",
 });
 

@@ -7,20 +7,20 @@ const Ordenes = sequelize.define("Ordenes", {
     primaryKey: true,
     autoIncrement: true,
   },
-  usuarios_idusuarios: {
+  usuarios_idUsuarios: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: "Usuarios", // Nombre del modelo de Usuarios
-      key: "idusuarios",
+      key: "idUsuarios",
     },
   },
-  estados_idestados: {
+  estados_idEstados: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: "Estados", // Nombre del modelo de Estados
-      key: "idestados",
+      key: "idEstados",
     },
   },
   nombre_completo: {
@@ -52,6 +52,8 @@ const Ordenes = sequelize.define("Ordenes", {
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
+}, {timestamps: false, 
+
 });
 
 const OrdenDetalles = sequelize.define("OrdenDetalles", {
@@ -88,19 +90,9 @@ const OrdenDetalles = sequelize.define("OrdenDetalles", {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
+}, {timestamps: false, 
+  
 });
 
-// Relaciones de OrdenDetalles
-OrdenDetalles.associate = (models) => {
-  OrdenDetalles.belongsTo(models.Ordenes, {
-    foreignKey: "Orden_idOrden",
-    as: "orden",
-  });
-
-  OrdenDetalles.belongsTo(models.Producto, {
-    foreignKey: "Productos_idProductos",
-    as: "producto",
-  });
-};
 
 module.exports = { Ordenes, OrdenDetalles };

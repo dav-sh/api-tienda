@@ -1,5 +1,15 @@
 const sequelize = require("../config/db");
 const { QueryTypes } = require('sequelize');
+const {Estados } = require('../config/indexDB')
+
+const getEstados = async (req, res) =>{
+  try {
+    const data = await Estados.findAll()
+    res.json(data)
+  } catch (error) {
+    res.json({'message' : 'Not found'})
+  }
+}
 
 
 // Insertar un nuevo estado
@@ -38,4 +48,4 @@ const updateEstado = async (req, res) => {
 };
 
 
-module.exports = {createEstado, updateEstado} 
+module.exports = {createEstado, updateEstado, getEstados} 

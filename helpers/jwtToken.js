@@ -5,7 +5,7 @@ const generateToken = async (user) => {
   return jwt.sign(
     {
       userId: user.get("idusuarios"),
-      roleId: user.get("rol_idrol"),
+      roleId: user.get("rol_idRol"),
     },
     process.env.SECRET_KEY,
     { expiresIn: "24h" }

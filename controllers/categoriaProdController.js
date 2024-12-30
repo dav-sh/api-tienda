@@ -4,10 +4,20 @@ const { QueryTypes } = require('sequelize');
 const CategoriaProductos = require('../models/CategoriaProductos'); 
 
 
+const getCategorias = async (req, res) => {
+  try {
+    const data = await CategoriaProductos.findAll()
+    res.json(data)
+  } catch (error) {
+    res.json({'message': 'Data not found'})
+  }
+}
+
+
 
 // Insertar una nueva categoría
 const createCategoria = async (req, res) => {
-  const { nombre, usuarios_idusuarios, estados_idestados } = req.body;
+  const { nombre, usuarios_idUsuarios, estados_idEstados } = req.body;
   try {
     // Verificar si la categoría ya existe
     const existingCategory = await CategoriaProductos.findOne({ where: { nombre } });
@@ -16,9 +26,9 @@ const createCategoria = async (req, res) => {
     }
 
     await sequelize.query(
-      'EXEC p_Insertar_Categoria :nombre, :usuarios_idusuarios, :estados_idestados',
+      'EXEC p_Insertar_Categoria :nombre, :usuarios_idUsuarios, :estados_idEstados',
       {
-        replacements: { nombre, usuarios_idusuarios, estados_idestados },
+        replacements: { nombre, usuarios_idUsuarios, estados_idEstados },
         type: QueryTypes.INSERT,
       }
     );
@@ -31,12 +41,12 @@ const createCategoria = async (req, res) => {
 // Modificar una categoría
 const updateCategoria = async (req, res) => {
   const { id } = req.params;
-  const { nombre, usuarios_idusuarios, estados_idestados } = req.body;
+  const { nombre, usuarios_idUsuarios, estados_idEstados } = req.body;
   try {
     await sequelize.query(
-      'EXEC p_Modificar_Categoria :idcategoriaProductos, :nombre, :usuarios_idusuarios, :estados_idestados',
+      'EXEC p_Modificar_Categoria :idCategoriaProductos, :nombre, :usuarios_idUsuarios, :estados_idEstados',
       {
-        replacements: { idcategoriaProductos: id, nombre, usuarios_idusuarios, estados_idestados },
+        replacements: { idCategoriaProductos: id, nombre, usuarios_idUsuarios, estados_idEstados },
         type: QueryTypes.UPDATE,
       }
     );
@@ -48,4 +58,4 @@ const updateCategoria = async (req, res) => {
 
 
 
-module.exports = {createCategoria, updateCategoria}
+module.exports = {createCategoria, updateCategoria, getCategorias}

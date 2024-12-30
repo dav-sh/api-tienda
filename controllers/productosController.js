@@ -21,7 +21,7 @@ const getProductos = async (req, res) => {
 const createProducto = async (req, res) => {
     const {
     CategoriaProductos_idCategoriaProductos, 
-    usuarios_idusuarios ,
+    usuarios_idUsuarios ,
     nombre ,
     marca ,
     codigo ,
@@ -32,7 +32,7 @@ const createProducto = async (req, res) => {
     await sequelize.query(
       `EXEC p_Insertar_Producto 
         :CategoriaProductos_idCategoriaProductos,     
-        :usuarios_idusuarios ,
+        :usuarios_idUsuarios ,
         :nombre ,
         :marca ,
         :codigo ,
@@ -42,7 +42,7 @@ const createProducto = async (req, res) => {
       {
         replacements: { 
             CategoriaProductos_idCategoriaProductos, 
-            usuarios_idusuarios ,
+            usuarios_idUsuarios ,
             nombre ,
             marca ,
             codigo ,
@@ -63,7 +63,7 @@ const updateProducto = async (req, res) => {
     const { id } = req.params;
     const { 
       CategoriaProductos_idCategoriaProductos, 
-      usuarios_idusuarios, 
+      usuarios_idUsuarios, 
       nombre, 
       marca, 
       codigo, 
@@ -74,12 +74,12 @@ const updateProducto = async (req, res) => {
   
     try {
       await sequelize.query(
-        'EXEC p_Actualizar_Producto :id, :CategoriaProductos_idCategoriaProductos, :usuarios_idusuarios, :nombre, :marca, :codigo, :stock, :precio, :foto',
+        'EXEC p_Actualizar_Producto :id, :CategoriaProductos_idCategoriaProductos, :usuarios_idUsuarios, :nombre, :marca, :codigo, :stock, :precio, :foto',
         {
           replacements: { 
             id, 
             CategoriaProductos_idCategoriaProductos, 
-            usuarios_idusuarios, 
+            usuarios_idUsuarios, 
             nombre, 
             marca, 
             codigo, 

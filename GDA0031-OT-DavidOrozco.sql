@@ -12,17 +12,17 @@ USE [GDA0031_OT_DavidOrozco];
 GO
 -- CREACIÓN DE TABLAS
 CREATE TABLE Estados (
-    idestados INT IDENTITY(1,1) PRIMARY KEY,
+    idEstados INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(45) NOT NULL
 );
 
 CREATE TABLE Roles (
-    idrol INT IDENTITY(1,1) PRIMARY KEY,
+    idRol INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(45) NOT NULL
 );
 
 CREATE TABLE Clientes (
-    idclientes INT IDENTITY(1,1) PRIMARY KEY,
+    idClientes INT IDENTITY(1,1) PRIMARY KEY,
     razon_social NVARCHAR(245),
     nombre_comercial NVARCHAR(245),
     direccion_entrega NVARCHAR(245),
@@ -31,31 +31,31 @@ CREATE TABLE Clientes (
 );
 
 CREATE TABLE Usuarios (
-    idusuarios INT IDENTITY(1,1) PRIMARY KEY,
-    rol_idrol INT NOT NULL FOREIGN KEY REFERENCES Roles(idrol),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
+    idUsuarios INT IDENTITY(1,1) PRIMARY KEY,
+    rol_idRol INT NOT NULL FOREIGN KEY REFERENCES Roles(idRol),
+    estados_idEstados INT NOT NULL FOREIGN KEY REFERENCES Estados(idEstados),
     correo_electronico NVARCHAR(245) NOT NULL,
     nombre_completo NVARCHAR(245) NOT NULL,
     password NVARCHAR(75) NOT NULL,
     telefono NVARCHAR(45),
     fecha_nacimiento DATE,
     fecha_creacion DATETIME DEFAULT GETDATE(),
-    clientes_idclientes INT NOT NULL FOREIGN KEY REFERENCES Clientes(idclientes)
+    clientes_idClientes INT NOT NULL FOREIGN KEY REFERENCES Clientes(idClientes)
 );
 
 CREATE TABLE CategoriaProductos (
-    idcategoriaProductos INT IDENTITY(1,1) PRIMARY KEY,
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
+    idCategoriaProductos INT IDENTITY(1,1) PRIMARY KEY,
+    usuarios_idUsuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idUsuarios),
+    estados_idEstados INT NOT NULL FOREIGN KEY REFERENCES Estados(idEstados),
     nombre NVARCHAR(45),
     fecha_creacion DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE Productos (
     idProductos INT IDENTITY(1,1) PRIMARY KEY,
-    CategoriaProductos_idCategoriaProductos INT NOT NULL FOREIGN KEY REFERENCES CategoriaProductos(idcategoriaProductos),
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
+    CategoriaProductos_idCategoriaProductos INT NOT NULL FOREIGN KEY REFERENCES CategoriaProductos(idCategoriaProductos),
+    usuarios_idUsuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idUsuarios),
+    estados_idEstados INT NOT NULL FOREIGN KEY REFERENCES Estados(idEstados),
     nombre NVARCHAR(45),
     marca NVARCHAR(45),
     codigo NVARCHAR(45),
@@ -67,8 +67,8 @@ CREATE TABLE Productos (
 
 CREATE TABLE Ordenes (
     idOrden INT IDENTITY(1,1) PRIMARY KEY,
-    usuarios_idusuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idusuarios),
-    estados_idestados INT NOT NULL FOREIGN KEY REFERENCES Estados(idestados),
+    usuarios_idUsuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idUsuarios),
+    estados_idEstados INT NOT NULL FOREIGN KEY REFERENCES Estados(idEstados),
     fecha_creacion DATETIME DEFAULT GETDATE(),
     nombre_completo NVARCHAR(245),
     direccion NVARCHAR(245),
@@ -118,14 +118,14 @@ GO
 
 -- Modificar un Roles
 CREATE PROCEDURE p_Modificar_Rol
-	@idrol INT,
+	@idRol INT,
 	@nombre NVARCHAR(45)
 AS
 BEGIN
 	UPDATE Roles
 	SET 
 		nombre = ISNULL(@nombre, nombre)
-	WHERE idrol = @idrol;
+	WHERE idRol = @idRol;
 END;
 
 
@@ -135,11 +135,11 @@ GO
 
 -- Eliminar un Roles
 CREATE PROCEDURE p_Eliminar_Rol
-	@idrol INT
+	@idRol INT
 AS
 BEGIN
 	DELETE FROM Roles 
-	WHERE idrol = @idrol;
+	WHERE idRol = @idRol;
 END;
 
 
@@ -165,14 +165,14 @@ END;
 GO
 -- Modificar un estado
 CREATE PROCEDURE p_Modificar_Estado
-	@idestados INT,
+	@idEstados INT,
 	@nombre NVARCHAR(45)
 AS
 BEGIN
 	UPDATE Estados 
 	SET 
 		nombre = ISNULL(@nombre, nombre)
-	WHERE idestados = @idestados;
+	WHERE idEstados = @idEstados;
 END;
 
 GO
@@ -181,11 +181,11 @@ GO
 
 -- Eliminar un estado
 CREATE PROCEDURE p_Eliminar_Estado
-	@idestados INT
+	@idEstados INT
 AS
 BEGIN
 	DELETE FROM Estados 
-	WHERE idestados = @idestados;
+	WHERE idEstados = @idEstados;
 END;
 
 
@@ -211,7 +211,7 @@ GO
 
 -- Modificar información de un cliente
 CREATE PROCEDURE p_Modificar_Cliente
-    @idclientes INT,
+    @idClientes INT,
     @razon_social NVARCHAR(245) = NULL,
     @nombre_comercial NVARCHAR(245) = NULL,
     @direccion_entrega NVARCHAR(245) = NULL,
@@ -226,18 +226,18 @@ BEGIN
         direccion_entrega = ISNULL(@direccion_entrega, direccion_entrega),
         telefono = ISNULL(@telefono, telefono),
         email = ISNULL(@email, email)
-    WHERE idclientes = @idclientes;
+    WHERE idClientes = @idClientes;
 END;
 GO
 
 -- Desabilitar un cliente (cambiar a estado "Inactivo")
 CREATE PROCEDURE p_Inactivar_Cliente
-    @idclientes INT
+    @idClientes INT
 AS
 BEGIN
     UPDATE Clientes
     SET razon_social = 'Inactivo - ' + razon_social
-    WHERE idclientes = @idclientes;
+    WHERE idClientes = @idClientes;
 END;
 GO
 
@@ -250,18 +250,18 @@ GO
 GO
 -- Insertar un nuevo usuario
 CREATE PROCEDURE p_Insertar_Usuario
-    @rol_idrol INT,
-    @estados_idestados INT,
+    @rol_idRol INT,
+    @estados_idEstados INT,
     @correo_electronico NVARCHAR(245),
     @nombre_completo NVARCHAR(245),
     @password NVARCHAR(75),
     @telefono NVARCHAR(45),
     @fecha_nacimiento DATE,
-    @clientes_idclientes INT
+    @clientes_idClientes INT
 AS
 BEGIN
-    INSERT INTO Usuarios (rol_idrol, estados_idestados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion,clientes_idclientes)
-    VALUES (@rol_idrol, @estados_idestados, @correo_electronico, @nombre_completo, @password, @telefono, @fecha_nacimiento, GETDATE(), @clientes_idclientes);
+    INSERT INTO Usuarios (rol_idRol, estados_idEstados, correo_electronico, nombre_completo, password, telefono, fecha_nacimiento, fecha_creacion,clientes_idClientes)
+    VALUES (@rol_idRol, @estados_idEstados, @correo_electronico, @nombre_completo, @password, @telefono, @fecha_nacimiento, GETDATE(), @clientes_idClientes);
 END;
 
 
@@ -270,28 +270,28 @@ GO
 
 -- Modificar información de un usuario
 CREATE PROCEDURE p_Modificar_Usuario
-    @idusuarios INT,
-    @rol_idrol INT = NULL,
-    @estados_idestados INT = NULL,
+    @idUsuarios INT,
+    @rol_idRol INT = NULL,
+    @estados_idEstados INT = NULL,
     @correo_electronico NVARCHAR(245) = NULL,
     @nombre_completo NVARCHAR(245) = NULL,
     @password NVARCHAR(75) = NULL,
     @telefono NVARCHAR(45) = NULL,
     @fecha_nacimiento DATE = NULL,
-    @clientes_idclientes INT = NULL
+    @clientes_idClientes INT = NULL
 AS
 BEGIN
     UPDATE Usuarios
     SET
-        rol_idrol = ISNULL(@rol_idrol, rol_idrol),
-        estados_idestados = ISNULL(@estados_idestados, estados_idestados),
+        rol_idRol = ISNULL(@rol_idRol, rol_idRol),
+        estados_idEstados = ISNULL(@estados_idEstados, estados_idEstados),
         correo_electronico = ISNULL(@correo_electronico, correo_electronico),
         nombre_completo = ISNULL(@nombre_completo, nombre_completo),
         password = ISNULL(@password, password),
         telefono = ISNULL(@telefono, telefono),
         fecha_nacimiento = ISNULL(@fecha_nacimiento, fecha_nacimiento),
-        clientes_idclientes = ISNULL(@clientes_idclientes, clientes_idclientes)
-    WHERE idusuarios = @idusuarios;
+        clientes_idClientes = ISNULL(@clientes_idClientes, clientes_idClientes)
+    WHERE idUsuarios = @idUsuarios;
 END;
 GO
 
@@ -305,8 +305,8 @@ CREATE PROCEDURE p_Cambiar_Estado_Usuario
 AS
 BEGIN
     UPDATE Usuarios
-    SET estados_idestados = @nuevoEstado
-    WHERE idusuarios = @idUsuario;
+    SET estados_idEstados = @nuevoEstado
+    WHERE idUsuarios = @idUsuario;
 END;
 
 GO
@@ -321,8 +321,8 @@ GO
 
 -- Insertar una orden con detalles usando JSON
 CREATE PROCEDURE p_Insertar_Orden
-    @usuarios_idusuarios INT,
-	@estados_idestados INT,
+    @usuarios_idUsuarios INT,
+	@estados_idEstados INT,
 	@nombre_completo NVARCHAR(245),
     @direccion NVARCHAR(45),
     @telefono NVARCHAR(45),
@@ -338,8 +338,8 @@ BEGIN
         -- 1. Insertar la Orden Principal
         DECLARE @idOrden INT;
 
-        INSERT INTO Ordenes (usuarios_idusuarios, estados_idestados, nombre_completo, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
-        VALUES (@usuarios_idusuarios, @estados_idestados, @nombre_completo, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
+        INSERT INTO Ordenes (usuarios_idUsuarios, estados_idEstados, nombre_completo, direccion, telefono, correo_electronico, fecha_entrega, total_orden, fecha_creacion)
+        VALUES (@usuarios_idUsuarios, @estados_idEstados, @nombre_completo, @direccion, @telefono, @correo_electronico, @fecha_entrega, @total_orden, GETDATE());
 
         SET @idOrden = SCOPE_IDENTITY(); -- Recuperar el ID de la orden insertada
 
@@ -372,7 +372,7 @@ GO
 -- Procedimiento almacenado para actualizar una orden y sus detalles
 CREATE PROCEDURE p_Modificar_Orden
     @idOrden INT,
-    @estados_idestados INT,
+    @estados_idEstados INT,
     @nombre_completo NVARCHAR(245),
     @direccion NVARCHAR(45),
     @telefono NVARCHAR(45),
@@ -387,7 +387,7 @@ BEGIN
 
         -- 1. Actualizar la Orden Principal
         UPDATE Ordenes
-        SET estados_idestados = @estados_idestados,
+        SET estados_idEstados = @estados_idEstados,
             nombre_completo = @nombre_completo,
             direccion = @direccion,
             telefono = @telefono,
@@ -439,7 +439,7 @@ BEGIN
 
         -- Actualizar el estado de la orden a inactiva (0 = inactivo)
         UPDATE Ordenes
-        SET estados_idestados = 0
+        SET estados_idEstados = 0
         WHERE idOrden = @idOrden;
 
         UPDATE OrdenDetalles
@@ -463,12 +463,12 @@ GO
 -- Insertar una nueva categoria
 CREATE PROCEDURE p_Insertar_Categoria
     @nombre NVARCHAR(45),
-    @usuarios_idusuarios INT,
-    @estados_idestados INT
+    @usuarios_idUsuarios INT,
+    @estados_idEstados INT
 AS
 BEGIN
-    INSERT INTO CategoriaProductos (nombre, usuarios_idusuarios, estados_idestados, fecha_creacion)
-    VALUES (@nombre, @usuarios_idusuarios, @estados_idestados, GETDATE());
+    INSERT INTO CategoriaProductos (nombre, usuarios_idUsuarios, estados_idEstados, fecha_creacion)
+    VALUES (@nombre, @usuarios_idUsuarios, @estados_idEstados, GETDATE());
 END;
 GO
 
@@ -476,12 +476,12 @@ GO
 -- Desabilitar una categoria
 CREATE PROCEDURE p_Cambiar_Estado_Categoria
     @idCategoria INT,
-	@estados_idestados INT
+	@estados_idEstados INT
 AS
 BEGIN
     UPDATE CategoriaProductos
-    SET estados_idestados = @estados_idestados
-    WHERE idcategoriaProductos = @idCategoria;
+    SET estados_idEstados = @estados_idEstados
+    WHERE idCategoriaProductos = @idCategoria;
 END;
 GO
 
@@ -493,7 +493,7 @@ GO
 -- Insertar un producto nuevo
 CREATE PROCEDURE p_Insertar_Producto
     @CategoriaProductos_idCategoriaProductos INT,
-    @usuarios_idusuarios INT,
+    @usuarios_idUsuarios INT,
     @nombre NVARCHAR(45),
     @marca NVARCHAR(45),
     @codigo NVARCHAR(45),
@@ -502,8 +502,8 @@ CREATE PROCEDURE p_Insertar_Producto
     @foto VARBINARY(MAX)
 AS
 BEGIN
-    INSERT INTO Productos (CategoriaProductos_idCategoriaProductos, usuarios_idusuarios, nombre, marca, codigo, stock, precio, foto, fecha_creacion, estados_idestados)
-    VALUES (@CategoriaProductos_idCategoriaProductos, @usuarios_idusuarios, @nombre, @marca, @codigo, @stock, @precio, @foto, GETDATE(), 1); -- Estado activo por defecto
+    INSERT INTO Productos (CategoriaProductos_idCategoriaProductos, usuarios_idUsuarios, nombre, marca, codigo, stock, precio, foto, fecha_creacion, estados_idEstados)
+    VALUES (@CategoriaProductos_idCategoriaProductos, @usuarios_idUsuarios, @nombre, @marca, @codigo, @stock, @precio, @foto, GETDATE(), 1); -- Estado activo por defecto
 END;
 GO
 
@@ -512,7 +512,7 @@ GO
 CREATE PROCEDURE p_Actualizar_Producto
     @idProducto INT, -- ID del producto a actualizar
     @CategoriaProductos_idCategoriaProductos INT,
-    @usuarios_idusuarios INT,
+    @usuarios_idUsuarios INT,
     @nombre NVARCHAR(45),
     @marca NVARCHAR(45),
     @codigo NVARCHAR(45),
@@ -524,7 +524,7 @@ BEGIN
     UPDATE Productos
     SET 
         CategoriaProductos_idCategoriaProductos = @CategoriaProductos_idCategoriaProductos,
-        usuarios_idusuarios = @usuarios_idusuarios,
+        usuarios_idUsuarios = @usuarios_idUsuarios,
         nombre = @nombre,
         marca = @marca,
         codigo = @codigo,
@@ -559,7 +559,7 @@ CREATE PROCEDURE p_Cambiar_Estado_Producto
 AS
 BEGIN
     UPDATE Productos
-    SET estados_idestados = @idEstado
+    SET estados_idEstados = @idEstado
     WHERE idProductos = @idProducto;
 END;
 
@@ -586,7 +586,7 @@ GO
 CREATE VIEW v_Productos_Activos AS
 SELECT * 
 FROM Productos 
-WHERE estados_idestados = 1 AND stock > 0;
+WHERE estados_idEstados = 1 AND stock > 0;
 
 
 
@@ -601,11 +601,11 @@ WHERE MONTH(fecha_creacion) = 8 AND YEAR(fecha_creacion) = 2024;
 
 GO
 CREATE VIEW v_Top10_Clientes_Mayor_Consumo AS
-SELECT c.idclientes, c.nombre_comercial, SUM(o.total_orden) AS TotalConsumo
+SELECT c.idClientes, c.nombre_comercial, SUM(o.total_orden) AS TotalConsumo
 FROM Clientes c
-JOIN Usuarios u ON u.clientes_idclientes = c.idclientes
-JOIN Ordenes o ON o.usuarios_idusuarios = u.idusuarios
-GROUP BY c.idclientes, c.nombre_comercial
+JOIN Usuarios u ON u.clientes_idClientes = c.idClientes
+JOIN Ordenes o ON o.usuarios_idUsuarios = u.idUsuarios
+GROUP BY c.idClientes, c.nombre_comercial
 ORDER BY TotalConsumo DESC
 OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
 
@@ -667,14 +667,14 @@ EXEC p_Insertar_Cliente
 -----------------USUARIO---------------------
 
 EXEC p_Insertar_Usuario 
-	@rol_idrol = 1 ,
-	@estados_idestados = 1,
+	@rol_idRol = 1 ,
+	@estados_idEstados = 1,
 	@correo_electronico = 'test@test.com', 
 	@nombre_completo = 'Usuario Nuevo', 
 	@password = '$2b$10$tB1.x630p0SxjEz/gAkEd.ag36.K/yXwpfhMnEzT5J15SDCEWG23W',    --1234
 	@telefono = '12345678', 
 	@fecha_nacimiento = '2020-12-20', 
-	@clientes_idclientes = 1;
+	@clientes_idClientes = 1;
 
 	GO
 --------------CATEGORIA------------------------
@@ -682,8 +682,8 @@ EXEC p_Insertar_Usuario
 -- Insertar una categoría
 EXEC p_Insertar_Categoria
     @nombre = 'Electrónica',
-    @usuarios_idusuarios = 1,
-    @estados_idestados = 1;
+    @usuarios_idUsuarios = 1,
+    @estados_idEstados = 1;
 	
 --------------PRODUCTO------------------------
 	GO
@@ -691,7 +691,7 @@ EXEC p_Insertar_Categoria
 -- Insertar un producto
 EXEC p_Insertar_Producto 
     @CategoriaProductos_idCategoriaProductos = 1,
-    @usuarios_idusuarios = 1,
+    @usuarios_idUsuarios = 1,
     @nombre = 'Aceite Maxima 007',
     @marca = 'Pum',
     @codigo = 'AMP',
@@ -711,11 +711,11 @@ EXEC p_Insertar_Producto
 --	@nombre = 'OPERADOR'
 
 --EXEC p_Modificar_Rol 
---	@idrol = 1, 
+--	@idRol = 1, 
 --	@nombre = 'OPERADOR';
 
 --EXEC p_Eliminar_rol 
---	@idrol = 1;
+--	@idRol = 1;
 
 -------------Estados---------------------------
 
@@ -723,11 +723,11 @@ EXEC p_Insertar_Producto
 --	@nombre = 'Activo'
 
 --EXEC p_Modificar_Estado 
---	@idestados = 1, 
+--	@idEstados = 1, 
 --	@nombre = 'Inactivo';
 
 --EXEC p_Eliminar_Estado 
---	@idestados = 1;
+--	@idEstados = 1;
 
 
 --EXEC p_Insertar_Estado
@@ -746,13 +746,13 @@ EXEC p_Insertar_Producto
 
 ---- Modificar información de un cliente
 --EXEC p_Modificar_Cliente 
---    @idclientes = 1,
+--    @idClientes = 1,
 --    @razon_social = 'Comercial ABC',
 --    @telefono = '87654321';
 
 ---- Desabilitar un cliente
 --EXEC p_Inactivar_Cliente 
---	@idclientes = 1;
+--	@idClientes = 1;
 
 
 
@@ -760,14 +760,14 @@ EXEC p_Insertar_Producto
 -------------------USUARIO---------------------
 
 --EXEC p_Insertar_Usuario 
---	@rol_idrol = 1 ,
---	@estados_idestados = 1,
+--	@rol_idRol = 1 ,
+--	@estados_idEstados = 1,
 --	@correo_electronico = 'test@test.com', 
 --	@nombre_completo = 'Usuario Nuevo', 
 --	@password = '123456789', 
 --	@telefono = '12345678', 
 --	@fecha_nacimiento = '2020-12-20', 
---	@clientes_idclientes = 1;
+--	@clientes_idClientes = 1;
 
 
 --EXEC p_Cambiar_Estado_Usuario 
@@ -782,8 +782,8 @@ EXEC p_Insertar_Producto
 ---- Insertar una categoría
 --EXEC p_Insertar_Categoria
 --    @nombre = 'Electrónica',
---    @usuarios_idusuarios = 1,
---    @estados_idestados = 1;
+--    @usuarios_idUsuarios = 1,
+--    @estados_idEstados = 1;
 
 
 --EXEC p_Cambiar_Estado_Categoria 
@@ -793,7 +793,7 @@ EXEC p_Insertar_Producto
 
 --EXEC p_Cambiar_Estado_Categoria 
 --	@idCategoria = 1, 
---	@estados_idestados = 2;
+--	@estados_idEstados = 2;
 
 
 
@@ -802,7 +802,7 @@ EXEC p_Insertar_Producto
 ---- Insertar un producto
 --EXEC p_Insertar_Producto 
 --    @CategoriaProductos_idCategoriaProductos = 1,
---    @usuarios_idusuarios = 1,
+--    @usuarios_idUsuarios = 1,
 --    @nombre = 'Aceite Maxima 007',
 --    @marca = 'Pum',
 --    @codigo = 'AMP',
@@ -831,8 +831,8 @@ EXEC p_Insertar_Producto
 --]';
 
 --EXEC p_Insertar_Orden
---    @usuarios_idusuarios = 1,
---	@estados_idestados = 1,
+--    @usuarios_idUsuarios = 1,
+--	@estados_idEstados = 1,
 --	@nombre_completo = "Juan Paco Pedro de la Mar",
 --    @direccion = '123 Calle Principal',
 --    @telefono = '555-123-4567',
@@ -849,7 +849,7 @@ EXEC p_Insertar_Producto
 
 --EXEC p_Modificar_Orden 
 --    @idOrden = 1, -- ID de la orden a modificar
---    @estados_idestados = 1,
+--    @estados_idEstados = 1,
 --    @nombre_completo = 'Ana López',
 --    @direccion = 'Calle Nueva 456',
 --    @telefono = '987-654-3210',

@@ -13,7 +13,12 @@ const Productos = sequelize.define("Productos", {
   stock: { type: DataTypes.FLOAT },
   precio: { type: DataTypes.FLOAT },
   foto: { type: DataTypes.BLOB("long") },
-});
+},
+  {
+    tableName: "Productos",
+    timestamps: false,
+  }
+);
 
 
 module.exports = Productos;

@@ -3,7 +3,7 @@ const sequelize = require('../config/db')
 
 
 const Estados = sequelize.define('Estados', {
-  idestados: {
+  idEstados: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
@@ -13,7 +13,7 @@ const Estados = sequelize.define('Estados', {
     allowNull: false,
   },
 }, {
-  tableName: 'estados',
+  tableName: 'Estados',
   timestamps: false,
 });
 

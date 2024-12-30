@@ -15,14 +15,14 @@ const getUsuarios = async (req, res) => {
 // Insertar un nuevo usuario
 const createUsuario = async (req, res) => {
   const {
-    rol_idrol,
-    estados_idestados,
+    rol_idRol,
+    estados_idEstados,
     correo_electronico,
     nombre_completo,
     password,
     telefono,
     fecha_nacimiento,
-    clientes_idclientes,
+    clientes_idClientes,
   } = req.body;
   try {
     // Verificar si el usuario ya existe
@@ -35,17 +35,17 @@ const createUsuario = async (req, res) => {
 
     const pwEncrypted = await encrypt(password);
     await sequelize.query(
-      "EXEC p_Insertar_Usuario :rol_idrol, :estados_idestados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idclientes",
+      "EXEC p_Insertar_Usuario :rol_idRol, :estados_idEstados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idClientes",
       {
         replacements: {
-          rol_idrol,
-          estados_idestados,
+          rol_idRol,
+          estados_idEstados,
           correo_electronico,
           nombre_completo,
           password: pwEncrypted,
           telefono,
           fecha_nacimiento,
-          clientes_idclientes,
+          clientes_idClientes,
         },
         type: QueryTypes.INSERT,
       }
@@ -67,14 +67,14 @@ const createUsuario = async (req, res) => {
 const updateUsuario = async (req, res) => {
   const idusuarios = req.params.id;
   let {
-    rol_idrol,
-    estados_idestados,
+    rol_idRol,
+    estados_idEstados,
     correo_electronico,
     nombre_completo,
     password,
     telefono,
     fecha_nacimiento,
-    clientes_idclientes,
+    clientes_idClientes,
   } = req.body;
 
   try {
@@ -94,18 +94,18 @@ const updateUsuario = async (req, res) => {
 
     // Actualiza el usuario en la base de datos
     await sequelize.query(
-      "EXEC p_Modificar_Usuario :idusuarios, :rol_idrol, :estados_idestados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idclientes",
+      "EXEC p_Modificar_Usuario :idusuarios, :rol_idRol, :estados_idEstados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idClientes",
       {
         replacements: {
           idusuarios,
-          rol_idrol,
-          estados_idestados,
+          rol_idRol,
+          estados_idEstados,
           correo_electronico,
           nombre_completo,
           password: pwEncrypted,
           telefono,
           fecha_nacimiento,
-          clientes_idclientes,
+          clientes_idClientes,
         },
         type: QueryTypes.UPDATE,
       }

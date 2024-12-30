@@ -2,25 +2,25 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db')
 
 const Usuarios = sequelize.define('Usuarios', {
-  idusuarios: {
+  idUsuarios: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  rol_idrol: {
+  rol_idRol: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Roles',
-      key: 'idrol',
+      key: 'idRol',
     },
   },
-  estados_idestados: {
+  estados_idEstados: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Estados',
-      key: 'idestados',
+      key: 'idEstados',
     },
   },
   correo_electronico: {
@@ -49,12 +49,12 @@ const Usuarios = sequelize.define('Usuarios', {
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
-  clientes_idclientes: {
+  clientes_idClientes: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Clientes',
-      key: 'idclientes',
+      key: 'idClientes',
     },
   },
 }, {

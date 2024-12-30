@@ -6,7 +6,7 @@ const sequelize = require('../config/db')
 const Roles = sequelize.define(
   "Roles",
   {
-    idrol: {
+    idRol: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

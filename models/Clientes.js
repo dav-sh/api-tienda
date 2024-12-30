@@ -3,7 +3,7 @@ const sequelize = require('../config/db')
 
 
 const Clientes = sequelize.define('Clientes', {
-  idclientes: {
+  idClientes: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
