@@ -58,4 +58,20 @@ const updateCategoria = async (req, res) => {
 
 
 
-module.exports = {createCategoria, updateCategoria, getCategorias}
+// Modificar una categoría
+const cambiarEstadoCategoria = async (req, res) => {
+  const { idCategoriaProductos, estados_idEstados } = req.params;
+  try {
+    await sequelize.query(
+      'EXEC p_Cambiar_Estado_Categoria :idCategoriaProductos, :estados_idEstados',
+      {
+        replacements: { idCategoriaProductos, estados_idEstados},
+        type: QueryTypes.UPDATE,
+      }
+    );
+    res.json({ message: 'Categoría desactivada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+module.exports = {createCategoria, updateCategoria, getCategorias, cambiarEstadoCategoria}

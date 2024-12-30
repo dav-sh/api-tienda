@@ -125,4 +125,14 @@ const updateUsuario = async (req, res) => {
   }
 };
 
+
+
+
+const deleteUsuario = async (req, res)=>{
+  const {estados_idEstados} = req.body
+}
+
+
+
+
 module.exports = { createUsuario, updateUsuario, getUsuarios };

@@ -704,7 +704,12 @@ GO
 EXEC p_Insertar_Estado
 	@nombre = 'Activo'
 
-	GO
+GO
+	
+EXEC p_Insertar_Estado
+@nombre = 'Inactivo'
+
+GO
 -- Insertar un cliente
 EXEC p_Insertar_Cliente 
     @razon_social = 'Comercial 2',
@@ -719,7 +724,19 @@ EXEC p_Insertar_Cliente
 EXEC p_Insertar_Usuario 
 	@rol_idRol = 1 ,
 	@estados_idEstados = 1,
-	@correo_electronico = 'test@test.com', 
+	@correo_electronico = 'admin@test.com', 
+	@nombre_completo = 'Admin Nuevo', 
+	@password = '$2b$10$tB1.x630p0SxjEz/gAkEd.ag36.K/yXwpfhMnEzT5J15SDCEWG23W',    --1234
+	@telefono = '12345678', 
+	@fecha_nacimiento = '2020-12-20', 
+	@clientes_idClientes = 1;
+
+	GO
+
+EXEC p_Insertar_Usuario 
+	@rol_idRol = 2 ,
+	@estados_idEstados = 1,
+	@correo_electronico = 'cliente@test.com', 
 	@nombre_completo = 'Usuario Nuevo', 
 	@password = '$2b$10$tB1.x630p0SxjEz/gAkEd.ag36.K/yXwpfhMnEzT5J15SDCEWG23W',    --1234
 	@telefono = '12345678', 
@@ -731,7 +748,13 @@ EXEC p_Insertar_Usuario
 
 -- Insertar una categoría
 EXEC p_Insertar_Categoria
-    @nombre = 'Electrónica',
+    @nombre = 'Automoviles',
+    @usuarios_idUsuarios = 1,
+    @estados_idEstados = 1;
+
+-- Insertar una categoría
+EXEC p_Insertar_Categoria
+    @nombre = 'Alimentos',
     @usuarios_idUsuarios = 1,
     @estados_idEstados = 1;
 	
@@ -750,6 +773,45 @@ EXEC p_Insertar_Producto
     @foto = NULL; -- Si no se tiene imagen inicial
 
 
+EXEC p_Insertar_Producto 
+    @CategoriaProductos_idCategoriaProductos = 2,
+    @usuarios_idUsuarios = 1,
+    @nombre = 'Jugo Natural de Naranja',
+    @marca = 'Citrus',
+    @codigo = 'JNO',
+    @stock = 50,
+    @precio = 15.99,
+    @foto = NULL; -- Si no se tiene imagen inicial
+
+EXEC p_Insertar_Producto 
+    @CategoriaProductos_idCategoriaProductos = 2,
+    @usuarios_idUsuarios = 1,
+    @nombre = 'Galletas de Chocolate',
+    @marca = 'Dulce Sorpresa',
+    @codigo = 'GDC',
+    @stock = 100,
+    @precio = 5.49,
+    @foto = NULL; -- Si no se tiene imagen inicial
+
+EXEC p_Insertar_Producto 
+    @CategoriaProductos_idCategoriaProductos = 2,
+    @usuarios_idUsuarios = 1,
+    @nombre = 'Aceite de Oliva Extra Virgen',
+    @marca = 'Olea',
+    @codigo = 'AOV',
+    @stock = 30,
+    @precio = 25.00,
+    @foto = NULL; -- Si no se tiene imagen inicial
+
+EXEC p_Insertar_Producto 
+    @CategoriaProductos_idCategoriaProductos = 2,
+    @usuarios_idUsuarios = 1,
+    @nombre = 'Leche Deslactosada',
+    @marca = 'Lácteos Frescos',
+    @codigo = 'LD',
+    @stock = 60,
+    @precio = 12.50,
+    @foto = NULL; -- Si no se tiene imagen inicial
 
 	--------------------------------------------------------------------
 	------------------- EXTRAS  ------------------------------------

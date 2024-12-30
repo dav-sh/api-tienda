@@ -4,7 +4,7 @@ const { getProductos, createProducto, updateProducto } = require('../controllers
 const { verifyToken, authorize, roles } = require('../middleware/auth');
 
 // Endpoints CRUD
-router.get('/', verifyToken, authorize(roles.OPERADOR, roles.CLIENTE), getProductos);
+router.get('/', verifyToken, authorize(roles.OPERADOR, roles.USUARIO), getProductos);
 router.post('/', verifyToken, authorize(roles.OPERADOR), createProducto);
 router.put('/:id', verifyToken, authorize(roles.OPERADOR), updateProducto);
 
