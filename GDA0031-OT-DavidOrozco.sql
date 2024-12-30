@@ -358,6 +358,15 @@ BEGIN
             precio FLOAT '$.precio',
             subtotal FLOAT '$.subtotal'
         ) AS JSONDetalles;
+		-- 3. Descontar la cantidad de productos
+        UPDATE Productos
+        SET stock = stock - JSONDetalles.cantidad
+        FROM OPENJSON(@jsonDetalles)
+        WITH (
+            Productos_idProductos INT '$.Productos_idProductos',
+            cantidad INT '$.cantidad'
+        ) AS JSONDetalles
+        WHERE Productos.idProductos = JSONDetalles.Productos_idProductos;
 
         COMMIT TRANSACTION;
     END TRY
@@ -418,6 +427,41 @@ BEGIN
                 subtotal FLOAT '$.subtotal'
             ) AS JSONDetalles;
         END
+		-- 3. Restaurar la cantidad de productos a su valor original
+        UPDATE Productos
+        SET stock = stock + ISNULL(OD.cantidad, 0)
+        FROM Productos
+        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.Productos_idProductos
+        WHERE OD.Orden_idOrden = @idOrden;
+
+        -- 4. Insertar los nuevos detalles de la orden usando OPENJSON
+        IF @jsonDetalles IS NOT NULL AND @jsonDetalles <> ''
+        BEGIN
+            INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
+            SELECT 
+                @idOrden AS Orden_idOrden,
+                JSONDetalles.Productos_idProductos,
+                JSONDetalles.cantidad,
+                JSONDetalles.precio,
+                JSONDetalles.subtotal
+            FROM OPENJSON(@jsonDetalles)
+            WITH (
+                Productos_idProductos INT '$.Productos_idProductos',
+                cantidad INT '$.cantidad',
+                precio FLOAT '$.precio',
+                subtotal FLOAT '$.subtotal'
+            ) AS JSONDetalles;
+
+            -- 5. Actualizar la cantidad de productos para reflejar los cambios
+            UPDATE Productos
+            SET stock = stock - JSONDetalles.cantidad
+            FROM OPENJSON(@jsonDetalles)
+            WITH (
+                Productos_idProductos INT '$.Productos_idProductos',
+                cantidad INT '$.cantidad'
+            ) AS JSONDetalles
+            WHERE Productos.idProductos = JSONDetalles.Productos_idProductos;
+        END
 
         COMMIT TRANSACTION;
     END TRY
@@ -437,11 +481,17 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
-        -- Actualizar el estado de la orden a inactiva (0 = inactivo)
+        -- 1. Actualizar el estado de la orden a inactiva (0 = inactivo)
         UPDATE Ordenes
         SET estados_idEstados = 0
         WHERE idOrden = @idOrden;
-
+		 -- 2. Restaurar la cantidad de productos
+        UPDATE Productos
+        SET stock = stock + ISNULL(OD.cantidad, 0)
+        FROM Productos
+        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.Productos_idProductos
+        WHERE OD.Orden_idOrden = @idOrden;
+		-- 3. Actualizar OrdenDetalles
         UPDATE OrdenDetalles
         SET cantidad = 0, subtotal = 0 
         WHERE Orden_idOrden = @idOrden;
@@ -537,17 +587,17 @@ GO
 
 
 
--- Actualizar stock de un producto
-CREATE PROCEDURE p_Actualizar_Stock_Producto
-    @idProducto INT,
-    @nuevoStock FLOAT
-AS
-BEGIN
-    UPDATE Productos
-    SET stock = @nuevoStock
-    WHERE idProductos = @idProducto;
-END;
-GO
+---- Actualizar stock de un producto
+--CREATE PROCEDURE p_Actualizar_Stock_Producto
+--    @idProducto INT,
+--    @nuevoStock FLOAT
+--AS
+--BEGIN
+--    UPDATE Productos
+--    SET stock = @nuevoStock
+--    WHERE idProductos = @idProducto;
+--END;
+--GO
 
 
 

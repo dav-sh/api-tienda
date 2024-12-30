@@ -20,19 +20,19 @@ const getOrdenes = async (req, res) => {
 }
 
 
-// Actualizar el stock de productos
-const updateStock = async (detalles_orden) => {
-  for (const detalle of detalles_orden) {
-    const { Productos_idProductos, cantidad } = detalle;
-    await sequelize.query(
-      'EXEC p_Actualizar_Stock_Producto @idProducto = :Productos_idProductos, @nuevoStock = :cantidad',
-      {
-        replacements: { Productos_idProductos, cantidad },
-        type: QueryTypes.UPDATE
-      }
-    );
-  }
-};
+// // Actualizar el stock de productos
+// const updateStock = async (detalles_orden) => {
+//   for (const detalle of detalles_orden) {
+//     const { Productos_idProductos, cantidad } = detalle;
+//     await sequelize.query(
+//       'EXEC p_Actualizar_Stock_Producto @idProducto = :Productos_idProductos, @nuevoStock = :cantidad',
+//       {
+//         replacements: { Productos_idProductos, cantidad },
+//         type: QueryTypes.UPDATE
+//       }
+//     );
+//   }
+// };
 
 // Insertar una nueva orden
 const createOrden = async (req, res) => {
@@ -60,7 +60,7 @@ const createOrden = async (req, res) => {
         type: QueryTypes.INSERT
       }
     );
-    await updateStock(detalles_orden);
+    // await updateStock(detalles_orden);
     res.json({ message: 'Orden creada exitosamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -94,7 +94,7 @@ const updateOrden = async (req, res) => {
         type: QueryTypes.UPDATE
       }
     );
-    await updateStock(detalles_orden);
+    // await updateStock(detalles_orden);
     res.json({ message: 'Orden actualizada exitosamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
