@@ -9,7 +9,7 @@ const usuariosRoutes = require('./routes/usuariosRoutes')
 const ordenRoutes = require('./routes/ordenRoutes')
 const authRoutes = require('./routes/authRoutes')
 var app = express();
-var port = 3000;
+var port = process.env.PORT || 3000;
 
 
 
