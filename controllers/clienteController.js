@@ -35,9 +35,9 @@ const updateCliente = async (req, res) => {
   const { razon_social, nombre_comercial, direccion_entrega, telefono, email } = req.body;
   try {
     await sequelize.query(
-      'EXEC p_Modificar_Cliente :idclientes, :razon_social, :nombre_comercial, :direccion_entrega, :telefono, :email',
+      'EXEC p_Modificar_Cliente :idClientes, :razon_social, :nombre_comercial, :direccion_entrega, :telefono, :email',
       {
-        replacements: { idclientes: id, razon_social, nombre_comercial, direccion_entrega, telefono, email },
+        replacements: { idClientes: id, razon_social, nombre_comercial, direccion_entrega, telefono, email },
         type: QueryTypes.UPDATE,
       }
     );

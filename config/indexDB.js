@@ -21,7 +21,7 @@ CategoriaProductos.belongsTo(Estados, {
 });
 
 CategoriaProductos.hasMany(Productos, {
-  foreignKey: "CategoriaProductos_idCategoriaProductos",
+  foreignKey: "categoriaProductos_idCategoriaProductos",
   as: "productos",
 });
 
@@ -43,24 +43,24 @@ Ordenes.belongsTo(Estados, {
 });
 
 Ordenes.hasMany(OrdenDetalles, {
-  foreignKey: "Orden_idOrden",
+  foreignKey: "orden_idOrden",
   as: "ordenDetalles",
 });
 
 // Relaciones de OrdenDetalles
 OrdenDetalles.belongsTo(Ordenes, {
-  foreignKey: "Orden_idOrden",
+  foreignKey: "orden_idOrden",
   as: "orden",
 });
 
 OrdenDetalles.belongsTo(Productos, {
-  foreignKey: "Productos_idProductos",
+  foreignKey: "productos_idProductos",
   as: "producto",
 });
 
 // Relaciones de Productos
 Productos.belongsTo(CategoriaProductos, {
-  foreignKey: "CategoriaProductos_idCategoriaProductos",
+  foreignKey: "categoriaProductos_idCategoriaProductos",
   as: "categoria",
 });
 
@@ -70,7 +70,7 @@ Productos.belongsTo(Estados, {
 });
 
 Productos.hasMany(OrdenDetalles, {
-  foreignKey: "Productos_idProductos",
+  foreignKey: "productos_idProductos",
   as: "ordenDetalles",
 });
 

@@ -65,7 +65,7 @@ const createUsuario = async (req, res) => {
 
 // Actualizar un usuario
 const updateUsuario = async (req, res) => {
-  const idusuarios = req.params.id;
+  const idUsuarios = req.params.id;
   let {
     rol_idRol,
     estados_idEstados,
@@ -79,7 +79,7 @@ const updateUsuario = async (req, res) => {
 
   try {
     // Verifica si el usuario existe
-    const user = await Usuarios.findByPk(idusuarios);
+    const user = await Usuarios.findByPk(idUsuarios);
     if (!user) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
@@ -94,10 +94,10 @@ const updateUsuario = async (req, res) => {
 
     // Actualiza el usuario en la base de datos
     await sequelize.query(
-      "EXEC p_Modificar_Usuario :idusuarios, :rol_idRol, :estados_idEstados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idClientes",
+      "EXEC p_Modificar_Usuario :idUsuarios, :rol_idRol, :estados_idEstados, :correo_electronico, :nombre_completo, :password, :telefono, :fecha_nacimiento, :clientes_idClientes",
       {
         replacements: {
-          idusuarios,
+          idUsuarios,
           rol_idRol,
           estados_idEstados,
           correo_electronico,
@@ -128,11 +128,26 @@ const updateUsuario = async (req, res) => {
 
 
 
-const deleteUsuario = async (req, res)=>{
-  const {estados_idEstados} = req.body
+const cambiarEstadoProducto = async (req, res)=>{
+  const {id} = req.params
+  const {idEstado} = req.body 
+  try {
+    await sequelize.query(
+      'EXEC p_Cambiar_Estado_Usuario :idUsuario, :nuevoEstado ',
+      {
+        replacements : {
+          idUsuario : id, nuevoEstado : idEstado
+        } ,type: QueryTypes.UPDATE,
+      }
+      
+    )
+    res.json({ message: "Estado del Usuario actualizado exitosamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 
 
 
-module.exports = { createUsuario, updateUsuario, getUsuarios };
+module.exports = { createUsuario, updateUsuario, getUsuarios, cambiarEstadoProducto };

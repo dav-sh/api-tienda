@@ -1,7 +1,7 @@
 const sequelize = require("../config/db");
 const { QueryTypes } = require('sequelize');
 
-const CategoriaProductos = require('../models/CategoriaProductos'); 
+const CategoriaProductos = require('../models/CategoriaProductos');
 
 
 const getCategorias = async (req, res) => {
@@ -9,7 +9,7 @@ const getCategorias = async (req, res) => {
     const data = await CategoriaProductos.findAll()
     res.json(data)
   } catch (error) {
-    res.json({'message': 'Data not found'})
+    res.json({ 'message': 'Data not found' })
   }
 }
 
@@ -60,18 +60,19 @@ const updateCategoria = async (req, res) => {
 
 // Modificar una categoría
 const cambiarEstadoCategoria = async (req, res) => {
-  const { idCategoriaProductos, estados_idEstados } = req.params;
+  const { id } = req.params
+  const { estados_idEstados } = req.body
   try {
     await sequelize.query(
       'EXEC p_Cambiar_Estado_Categoria :idCategoriaProductos, :estados_idEstados',
       {
-        replacements: { idCategoriaProductos, estados_idEstados},
+        replacements: { idCategoriaProductos: id, estados_idEstados },
         type: QueryTypes.UPDATE,
       }
     );
-    res.json({ message: 'Categoría desactivada exitosamente' });
+    res.json({ message: 'Estado de Categoría actualizada exitosamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-module.exports = {createCategoria, updateCategoria, getCategorias, cambiarEstadoCategoria}
+module.exports = { createCategoria, updateCategoria, getCategorias, cambiarEstadoCategoria }

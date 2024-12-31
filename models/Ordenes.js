@@ -62,7 +62,7 @@ const OrdenDetalles = sequelize.define("OrdenDetalles", {
     primaryKey: true,
     autoIncrement: true,
   },
-  Orden_idOrden: {
+  orden_idOrden: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -70,7 +70,7 @@ const OrdenDetalles = sequelize.define("OrdenDetalles", {
       key: "idOrden",
     },
   },
-  Productos_idProductos: {
+  productos_idProductos: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {

@@ -35,9 +35,9 @@ const updateEstado = async (req, res) => {
   const { nombre } = req.body;
   try {
     await sequelize.query(
-      'EXEC p_Modificar_Estado :idestados, :nombre',
+      'EXEC p_Modificar_Estado :idEstados, :nombre',
       {
-        replacements: { idestados: id, nombre },
+        replacements: { idEstados: id, nombre },
         type: QueryTypes.UPDATE,
       }
     );

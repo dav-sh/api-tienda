@@ -23,11 +23,11 @@ const getOrdenes = async (req, res) => {
 // // Actualizar el stock de productos
 // const updateStock = async (detalles_orden) => {
 //   for (const detalle of detalles_orden) {
-//     const { Productos_idProductos, cantidad } = detalle;
+//     const { productos_idProductos, cantidad } = detalle;
 //     await sequelize.query(
-//       'EXEC p_Actualizar_Stock_Producto @idProducto = :Productos_idProductos, @nuevoStock = :cantidad',
+//       'EXEC p_Actualizar_Stock_Producto @idProducto = :productos_idProductos, @nuevoStock = :cantidad',
 //       {
-//         replacements: { Productos_idProductos, cantidad },
+//         replacements: { productos_idProductos, cantidad },
 //         type: QueryTypes.UPDATE
 //       }
 //     );

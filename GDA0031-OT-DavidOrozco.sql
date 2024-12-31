@@ -53,7 +53,7 @@ CREATE TABLE CategoriaProductos (
 
 CREATE TABLE Productos (
     idProductos INT IDENTITY(1,1) PRIMARY KEY,
-    CategoriaProductos_idCategoriaProductos INT NOT NULL FOREIGN KEY REFERENCES CategoriaProductos(idCategoriaProductos),
+    categoriaProductos_idCategoriaProductos INT NOT NULL FOREIGN KEY REFERENCES CategoriaProductos(idCategoriaProductos),
     usuarios_idUsuarios INT NOT NULL FOREIGN KEY REFERENCES Usuarios(idUsuarios),
     estados_idEstados INT NOT NULL FOREIGN KEY REFERENCES Estados(idEstados),
     nombre NVARCHAR(45),
@@ -80,8 +80,8 @@ CREATE TABLE Ordenes (
 
 CREATE TABLE OrdenDetalles (
     idOrdenDetalles INT IDENTITY(1,1) PRIMARY KEY,
-    Orden_idOrden INT NOT NULL FOREIGN KEY REFERENCES Ordenes(idOrden),
-    Productos_idProductos INT NOT NULL FOREIGN KEY REFERENCES Productos(idProductos),
+    orden_idOrden INT NOT NULL FOREIGN KEY REFERENCES Ordenes(idOrden),
+    productos_idProductos INT NOT NULL FOREIGN KEY REFERENCES Productos(idProductos),
     cantidad INT,
     precio FLOAT,
     subtotal FLOAT
@@ -344,16 +344,16 @@ BEGIN
         SET @idOrden = SCOPE_IDENTITY(); -- Recuperar el ID de la orden insertada
 
         -- 2. Insertar los Detalles de la Orden usando OPENJSON
-        INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
+        INSERT INTO OrdenDetalles (orden_idOrden, productos_idProductos, cantidad, precio, subtotal)
         SELECT 
-            @idOrden AS Orden_idOrden,
-            JSONDetalles.Productos_idProductos,
+            @idOrden AS orden_idOrden,
+            JSONDetalles.productos_idProductos,
             JSONDetalles.cantidad,
             JSONDetalles.precio,
             JSONDetalles.subtotal
         FROM OPENJSON(@jsonDetalles)
         WITH (
-            Productos_idProductos INT '$.Productos_idProductos',
+            productos_idProductos INT '$.productos_idProductos',
             cantidad INT '$.cantidad',
             precio FLOAT '$.precio',
             subtotal FLOAT '$.subtotal'
@@ -363,10 +363,10 @@ BEGIN
         SET stock = stock - JSONDetalles.cantidad
         FROM OPENJSON(@jsonDetalles)
         WITH (
-            Productos_idProductos INT '$.Productos_idProductos',
+            productos_idProductos INT '$.productos_idProductos',
             cantidad INT '$.cantidad'
         ) AS JSONDetalles
-        WHERE Productos.idProductos = JSONDetalles.Productos_idProductos;
+        WHERE Productos.idProductos = JSONDetalles.productos_idProductos;
 
         COMMIT TRANSACTION;
     END TRY
@@ -407,21 +407,21 @@ BEGIN
 
         -- 2. Eliminar los detalles actuales de la orden
         DELETE FROM OrdenDetalles
-        WHERE Orden_idOrden = @idOrden;
+        WHERE orden_idOrden = @idOrden;
 
         -- 3. Insertar los nuevos detalles de la orden usando OPENJSON
         IF @jsonDetalles IS NOT NULL AND @jsonDetalles <> ''
         BEGIN
-            INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
+            INSERT INTO OrdenDetalles (orden_idOrden, productos_idProductos, cantidad, precio, subtotal)
             SELECT 
-                @idOrden AS Orden_idOrden,
-                JSONDetalles.Productos_idProductos,
+                @idOrden AS orden_idOrden,
+                JSONDetalles.productos_idProductos,
                 JSONDetalles.cantidad,
                 JSONDetalles.precio,
                 JSONDetalles.subtotal
             FROM OPENJSON(@jsonDetalles)
             WITH (
-                Productos_idProductos INT '$.Productos_idProductos',
+                productos_idProductos INT '$.productos_idProductos',
                 cantidad INT '$.cantidad',
                 precio FLOAT '$.precio',
                 subtotal FLOAT '$.subtotal'
@@ -431,22 +431,22 @@ BEGIN
         UPDATE Productos
         SET stock = stock + ISNULL(OD.cantidad, 0)
         FROM Productos
-        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.Productos_idProductos
-        WHERE OD.Orden_idOrden = @idOrden;
+        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.productos_idProductos
+        WHERE OD.orden_idOrden = @idOrden;
 
         -- 4. Insertar los nuevos detalles de la orden usando OPENJSON
         IF @jsonDetalles IS NOT NULL AND @jsonDetalles <> ''
         BEGIN
-            INSERT INTO OrdenDetalles (Orden_idOrden, Productos_idProductos, cantidad, precio, subtotal)
+            INSERT INTO OrdenDetalles (orden_idOrden, productos_idProductos, cantidad, precio, subtotal)
             SELECT 
-                @idOrden AS Orden_idOrden,
-                JSONDetalles.Productos_idProductos,
+                @idOrden AS orden_idOrden,
+                JSONDetalles.productos_idProductos,
                 JSONDetalles.cantidad,
                 JSONDetalles.precio,
                 JSONDetalles.subtotal
             FROM OPENJSON(@jsonDetalles)
             WITH (
-                Productos_idProductos INT '$.Productos_idProductos',
+                productos_idProductos INT '$.productos_idProductos',
                 cantidad INT '$.cantidad',
                 precio FLOAT '$.precio',
                 subtotal FLOAT '$.subtotal'
@@ -457,10 +457,10 @@ BEGIN
             SET stock = stock - JSONDetalles.cantidad
             FROM OPENJSON(@jsonDetalles)
             WITH (
-                Productos_idProductos INT '$.Productos_idProductos',
+                productos_idProductos INT '$.productos_idProductos',
                 cantidad INT '$.cantidad'
             ) AS JSONDetalles
-            WHERE Productos.idProductos = JSONDetalles.Productos_idProductos;
+            WHERE Productos.idProductos = JSONDetalles.productos_idProductos;
         END
 
         COMMIT TRANSACTION;
@@ -489,12 +489,12 @@ BEGIN
         UPDATE Productos
         SET stock = stock + ISNULL(OD.cantidad, 0)
         FROM Productos
-        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.Productos_idProductos
-        WHERE OD.Orden_idOrden = @idOrden;
+        INNER JOIN OrdenDetalles OD ON Productos.idProductos = OD.productos_idProductos
+        WHERE OD.orden_idOrden = @idOrden;
 		-- 3. Actualizar OrdenDetalles
         UPDATE OrdenDetalles
         SET cantidad = 0, subtotal = 0 
-        WHERE Orden_idOrden = @idOrden;
+        WHERE orden_idOrden = @idOrden;
 
         COMMIT TRANSACTION;
     END TRY
@@ -522,6 +522,24 @@ BEGIN
 END;
 GO
 
+-- Modificar una categoria
+CREATE PROCEDURE p_Modificar_Categoria
+    @idCategoria INT,
+    @nombre NVARCHAR(45),
+    @usuarios_idUsuarios INT,
+    @estados_idEstados INT
+AS
+BEGIN
+    UPDATE CategoriaProductos
+    SET 
+        nombre = @nombre,
+        usuarios_idUsuarios = @usuarios_idUsuarios,
+        estados_idEstados = @estados_idEstados
+    WHERE idCategoriaProductos = @idCategoria;
+END;
+GO
+
+
 
 -- Desabilitar una categoria
 CREATE PROCEDURE p_Cambiar_Estado_Categoria
@@ -542,7 +560,7 @@ GO
 
 -- Insertar un producto nuevo
 CREATE PROCEDURE p_Insertar_Producto
-    @CategoriaProductos_idCategoriaProductos INT,
+    @categoriaProductos_idCategoriaProductos INT,
     @usuarios_idUsuarios INT,
     @nombre NVARCHAR(45),
     @marca NVARCHAR(45),
@@ -552,8 +570,8 @@ CREATE PROCEDURE p_Insertar_Producto
     @foto VARBINARY(MAX)
 AS
 BEGIN
-    INSERT INTO Productos (CategoriaProductos_idCategoriaProductos, usuarios_idUsuarios, nombre, marca, codigo, stock, precio, foto, fecha_creacion, estados_idEstados)
-    VALUES (@CategoriaProductos_idCategoriaProductos, @usuarios_idUsuarios, @nombre, @marca, @codigo, @stock, @precio, @foto, GETDATE(), 1); -- Estado activo por defecto
+    INSERT INTO Productos (categoriaProductos_idCategoriaProductos, usuarios_idUsuarios, nombre, marca, codigo, stock, precio, foto, fecha_creacion, estados_idEstados)
+    VALUES (@categoriaProductos_idCategoriaProductos, @usuarios_idUsuarios, @nombre, @marca, @codigo, @stock, @precio, @foto, GETDATE(), 1); -- Estado activo por defecto
 END;
 GO
 
@@ -561,7 +579,7 @@ GO
 -- Actualizar un producto existente
 CREATE PROCEDURE p_Actualizar_Producto
     @idProducto INT, -- ID del producto a actualizar
-    @CategoriaProductos_idCategoriaProductos INT,
+    @categoriaProductos_idCategoriaProductos INT,
     @usuarios_idUsuarios INT,
     @nombre NVARCHAR(45),
     @marca NVARCHAR(45),
@@ -573,7 +591,7 @@ AS
 BEGIN
     UPDATE Productos
     SET 
-        CategoriaProductos_idCategoriaProductos = @CategoriaProductos_idCategoriaProductos,
+        categoriaProductos_idCategoriaProductos = @categoriaProductos_idCategoriaProductos,
         usuarios_idUsuarios = @usuarios_idUsuarios,
         nombre = @nombre,
         marca = @marca,
@@ -665,7 +683,7 @@ GO
 CREATE VIEW v_Top10_Productos_Mas_Vendidos AS
 SELECT p.idProductos, p.nombre, SUM(od.cantidad) AS TotalCantidad
 FROM Productos p
-JOIN OrdenDetalles od ON od.Productos_idProductos = p.idProductos
+JOIN OrdenDetalles od ON od.productos_idProductos = p.idProductos
 GROUP BY p.idProductos, p.nombre
 ORDER BY TotalCantidad ASC
 OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
@@ -763,7 +781,7 @@ EXEC p_Insertar_Categoria
 
 -- Insertar un producto
 EXEC p_Insertar_Producto 
-    @CategoriaProductos_idCategoriaProductos = 1,
+    @categoriaProductos_idCategoriaProductos = 1,
     @usuarios_idUsuarios = 1,
     @nombre = 'Aceite Maxima 007',
     @marca = 'Pum',
@@ -774,7 +792,7 @@ EXEC p_Insertar_Producto
 
 
 EXEC p_Insertar_Producto 
-    @CategoriaProductos_idCategoriaProductos = 2,
+    @categoriaProductos_idCategoriaProductos = 2,
     @usuarios_idUsuarios = 1,
     @nombre = 'Jugo Natural de Naranja',
     @marca = 'Citrus',
@@ -784,7 +802,7 @@ EXEC p_Insertar_Producto
     @foto = NULL; -- Si no se tiene imagen inicial
 
 EXEC p_Insertar_Producto 
-    @CategoriaProductos_idCategoriaProductos = 2,
+    @categoriaProductos_idCategoriaProductos = 2,
     @usuarios_idUsuarios = 1,
     @nombre = 'Galletas de Chocolate',
     @marca = 'Dulce Sorpresa',
@@ -794,7 +812,7 @@ EXEC p_Insertar_Producto
     @foto = NULL; -- Si no se tiene imagen inicial
 
 EXEC p_Insertar_Producto 
-    @CategoriaProductos_idCategoriaProductos = 2,
+    @categoriaProductos_idCategoriaProductos = 2,
     @usuarios_idUsuarios = 1,
     @nombre = 'Aceite de Oliva Extra Virgen',
     @marca = 'Olea',
@@ -804,7 +822,7 @@ EXEC p_Insertar_Producto
     @foto = NULL; -- Si no se tiene imagen inicial
 
 EXEC p_Insertar_Producto 
-    @CategoriaProductos_idCategoriaProductos = 2,
+    @categoriaProductos_idCategoriaProductos = 2,
     @usuarios_idUsuarios = 1,
     @nombre = 'Leche Deslactosada',
     @marca = 'Lácteos Frescos',
@@ -913,7 +931,7 @@ EXEC p_Insertar_Producto
 
 ---- Insertar un producto
 --EXEC p_Insertar_Producto 
---    @CategoriaProductos_idCategoriaProductos = 1,
+--    @categoriaProductos_idCategoriaProductos = 1,
 --    @usuarios_idUsuarios = 1,
 --    @nombre = 'Aceite Maxima 007',
 --    @marca = 'Pum',
@@ -939,7 +957,7 @@ EXEC p_Insertar_Producto
 ------------------- INSERTAR UNA ORDEN ----------------
 
 --DECLARE @jsonDetalles NVARCHAR(MAX) = '[
---    {"Productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00}
+--    {"productos_idProductos": 1, "cantidad": 2, "precio": 150.00, "subtotal": 300.00}
 --]';
 
 --EXEC p_Insertar_Orden

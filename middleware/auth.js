@@ -6,7 +6,7 @@ const { Usuarios, Roles } = require("../config/indexDB"); //Modelos con relacion
 // Middleware para verificar el token JWT
 const verifyToken = async (req, res, next) => {
   const token = req.headers.authorization;
-  console.log(token);
+  //console.log(token);
   if (!token) {
     return res.status(403).json({ error: 'Token not found' });
   }
@@ -16,7 +16,7 @@ const verifyToken = async (req, res, next) => {
     return res.status(401).json({ error: 'Invalid token' });
   }
   req.user = decoded; // Agrega el usuario decodificado a la solicitud
-  console.log(req.user);
+  //console.log(req.user);
   next();
 
 };
@@ -24,7 +24,7 @@ const verifyToken = async (req, res, next) => {
 // Middleware para verificar permisos (Roles)
 const authorize = (...allowedRoles) => async (req, res, next) => {
   // console.log(req.user)
-  //const user = await Usuarios.findOne({where: { idusuarios: req.user.userId }})
+  //const user = await Usuarios.findOne({where: { idUsuarios: req.user.userId }})
   const role = await Usuarios.findOne({
     where: {rol_idRol: req.user.roleId },
     include: [{

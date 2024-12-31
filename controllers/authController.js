@@ -11,7 +11,7 @@ const login = async (req, res) => {
   }
   try {
     // Buscamos el usuario
-    //console.log("Email recibido:", email);
+    console.log("Email recibido:", email);
     const user = await Usuarios.findOne({
       where: { correo_electronico: email },
     });
@@ -29,7 +29,7 @@ const login = async (req, res) => {
     }
 
     // Generar el token JWT
-    // console.log(user.get('idusuarios'))
+    // console.log(user.get('idUsuarios'))
     // console.log( user.get('rol_idRol'))
     const token = await generateToken(user);
     // console.log(token);
