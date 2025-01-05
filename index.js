@@ -7,7 +7,9 @@ const clienteRoutes = require('./routes/clienteRoutes')
 const categoriaProdRoutes = require('./routes/categoriaProdRoutes')
 const usuariosRoutes = require('./routes/usuariosRoutes')
 const ordenRoutes = require('./routes/ordenRoutes')
-const authRoutes = require('./routes/authRoutes')
+const authRoutes = require('./routes/authRoutes');
+const rolesRoutes = require('./routes/rolesRoutes');
+const { roles } = require('./middleware/auth');
 var app = express();
 var port = process.env.PORT || 3000;
 
@@ -27,6 +29,7 @@ app.use("/api/clientes", clienteRoutes)
 app.use("/api/categoria", categoriaProdRoutes)
 app.use("/api/usuarios", usuariosRoutes)
 app.use("/api/ordenes", ordenRoutes)
+app.use("/api/roles", rolesRoutes)
 
 //Home
 app.get('/', async function (req, res) {
