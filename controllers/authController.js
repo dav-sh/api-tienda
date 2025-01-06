@@ -17,7 +17,7 @@ const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "Email not found" });
+      return res.status(401).json({ message: "Email not found" });
     }
     //console.log(password)
     //console.log(user.get('password'))
@@ -32,8 +32,15 @@ const login = async (req, res) => {
     // console.log(user.get('idUsuarios'))
     // console.log( user.get('rol_idRol'))
     const token = await generateToken(user);
+    res.cookie('token', token, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+      // maxAge: 3600000, // 1 hora
+    });
+
     // console.log(token);
-    res.json({ token });
+    res.status(200).json({user,token});
   } catch (error) {
     res.status(500).json({ error: "Error generating token" });
   }

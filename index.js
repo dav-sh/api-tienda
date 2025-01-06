@@ -9,17 +9,36 @@ const usuariosRoutes = require('./routes/usuariosRoutes')
 const ordenRoutes = require('./routes/ordenRoutes')
 const authRoutes = require('./routes/authRoutes');
 const rolesRoutes = require('./routes/rolesRoutes');
-const { roles } = require('./middleware/auth');
+const cookieParser = require("cookie-parser");
+const cors = require('cors');
 var app = express();
 var port = process.env.PORT || 3000;
 
 
 
 // Middlewares
+app.use(cors(
+	{
+		origin: "http://localhost:5173",
+		credentials: true,  // Permite el envío de cookies
+	}
+))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 
+// app.use((req, res, next) => {
+//     res.header("Access-Control-Allow-Origin", );
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
+
+// app.options('*', (req, res) => {
+//     res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//     res.sendStatus(200);
+// });
 
 //Rutas
 app.use('/api/auth', authRoutes);

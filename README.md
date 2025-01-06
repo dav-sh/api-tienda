@@ -22,7 +22,8 @@ Extras JWT
 
 
 ### CONFIGURAR .env ###
-    PORT='port_sql_server'
+    PORT='port_server_nodejs'
+    PORT_DB='port_sql_server'
     DB_HOST='localhost'
     DB_USER='user_sql_server'
     DB_PASSWORD='password_sql_server'
