@@ -2,10 +2,7 @@ const { z } = require('zod'); // Correct import
 
 const createCategoriaSchema = z.object({
 
-    
-        idCategoriaProductos: z.number({
-            required_error: 'idCategoriaProductos is required',
-        }).int(),
+
         nombre:  z.string({
             required_error: 'nombre is required'
         }),
@@ -24,9 +21,6 @@ const createCategoriaSchema = z.object({
 const updateCategoriaSchema = z.object({
 
     
-    idCategoriaProductos: z.number({
-        required_error: 'idCategoriaProductos is required',
-    }).int(),
     nombre:  z.string({
         required_error: 'nombre is required'
     }),

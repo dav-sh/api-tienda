@@ -19,6 +19,28 @@ const getOrdenes = async (req, res) => {
   }
 }
 
+const getOrdenesById = async (req, res) => {
+  const ordenId = req.params.id; 
+  try {
+    // Busca la orden por su ID
+    const data = await Ordenes.findOne({
+      where: { idOrden: ordenId }, // Filtra por el ID recibido
+      include: [{
+        model: OrdenDetalles,
+        as: 'ordenDetalles', 
+      }],
+    });
+
+    if (data) { // Si la orden se encontró
+      return res.json(data); 
+    } else { // Si no se encontró la orden
+      return res.status(404).json({ message: 'Orden no encontrada' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al buscar la orden', error: error.message });
+  }
+}
+
 
 // // Actualizar el stock de productos
 // const updateStock = async (detalles_orden) => {
@@ -101,4 +123,4 @@ const updateOrden = async (req, res) => {
   }
 };
 
-module.exports = { getOrdenes, createOrden, updateOrden };
+module.exports = { getOrdenes, createOrden, updateOrden, getOrdenesById };
